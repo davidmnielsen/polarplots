@@ -1,4 +1,5 @@
 # Polar Plots
+## Make a nice and quick plot with one line of code
 The objective of this simple module is to make your life easier when ploting maps in polar stereographic projections with Matplotlib (and Numpy). With only one line of code, you can make decent-looking plots, that would normally take some 20-30 lines, customizations, and time.
 
 ### Example 1: the simplest plot
