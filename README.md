@@ -2,7 +2,7 @@
 The objective of this simple module is to make your life easier when ploting maps in polar stereographic projections with Matplotlib (and Numpy). With only one line of code, you can make decent-looking plots, that would normally take some 20-30 lines, customizations, and time.
 
 ### Example 1: the simplest plot
-Here, we are using the file patterns.nc, which contains the first 3 EOF's of Northern Hemisphere SLP. The 1st EOF is the pattern in which the North Atlantic Oscillation is based.
+Here, we are using the file patterns.nc, which contains the first 3 EOF's of Northern Hemisphere SLP. The 1st EOF is the pattern in which the North Atlantic Oscillation is based. A reference for this plot is available at NOAA's website [here](http://www.cpc.ncep.noaa.gov/products/precip/CWlink/daily_ao_index/ao.loading.shtml), where good old GrADS was appearently used.
 ```python
 # Usual imports
 import numpy as np
