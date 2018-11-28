@@ -24,14 +24,14 @@ def draw_round_frame(m, width_percent=0.05, degree=45):
         ax.add_patch(wedge)
 
 def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle='',clabel='',
-                 zeroline=0,cmap='RdBu_r',contours=0,hemisphere='N',fontsize=8,show0=0):
+                 zeroline=0,cmap='RdBu_r',contours=0,hemisphere='N',fontsize=8,show0=0,resolution='c',figsize=(8,8)):
     # Libraries
     import numpy as np
     from mpl_toolkits.basemap import Basemap, addcyclic
     import matplotlib.pyplot as plt
     from matplotlib import cm
     
-    figure=plt.figure(figsize=(8,8))
+    figure=plt.figure(figsize=figsize)
     ax = figure.add_subplot(111)
       
     if vmin==0 or vmax==0 or inc==0:
@@ -73,7 +73,7 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     else:
         print('Invalid hemisphere: should be "N" or "S".')
         return figure
-    m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution='c',round=True)
+    m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
     x, y = m(*np.meshgrid(lon_c,lat))
     cbar=cm.get_cmap(cmap,ncolors)
     cbar.set_under(color='black')
