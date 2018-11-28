@@ -26,7 +26,10 @@ def draw_round_frame(m, width_percent=0.05, degree=45):
 def myround(x, prec=1, base=.5):
     return round(base * round(float(x)/base),prec)
 
-def myround10(x, prec=1, base=10):
+def myround50(x, prec=1, base=50):
+    return round(base * round(float(x)/base),prec)
+
+def myround100(x, prec=1, base=100):
     return round(base * round(float(x)/base),prec)
         
 def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle='',clabel='',
@@ -51,14 +54,14 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
         else:
             vmin=-mymax
             vmax=mymax
-        if abs(vmax)>0 and abs(vmax)<10 and myround(vmax)>vmax:
+        if abs(vmax)>1 and abs(vmax)<10 and myround(vmax)>vmax:
             vmax=myround(vmax)
             vmin=myround(vmin)
             if ((vmax*10)%10)==0:
                 inc=vmax/10
             else:
                 inc=0.5
-        elif abs(vmax)>0 and abs(vmax)<10 and myround(vmax)<vmax:
+        elif abs(vmax)>1 and abs(vmax)<10 and myround(vmax)<vmax:
             vmax=myround(vmax)
             vmin=myround(vmin)
             if ((vmax*10)%10)==0:
@@ -77,16 +80,50 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
             inc=vmax/10
             vmax=vmax+inc
             vmin=vmin-inc
-        elif abs(vmax)>100 and myround10(vmax,0)>vmax:
-            vmax=myround10(vmax)
-            vmin=myround10(vmin)
+        elif abs(vmax)>=100 and abs(vmax)<500 and myround50(vmax,0)>vmax:
+            vmax=myround50(vmax)
+            vmin=myround50(vmin)
+            inc=50
+        elif abs(vmax)>=100 and abs(vmax)<500 and myround50(vmax,0)<vmax:
+            vmax=myround50(vmax)
+            vmin=myround50(vmin)
+            inc=50
+            vmax=vmax+inc
+            vmin=vmin-inc
+        elif abs(vmax)>=500 and abs(vmax)<1000 and myround50(vmax,0)>vmax:
+            vmax=myround50(vmax)
+            vmin=myround50(vmin)
+            if (vmax%100)==0:
+                inc=100
+            else:
+                vmax=vmax+50
+                vmin=vmin-50
+                inc=100
+        elif abs(vmax)>=500 and abs(vmax)<1000 and myround50(vmax,0)<vmax:
+            vmax=myround50(vmax)
+            vmin=myround50(vmin)
+            if (vmax%100)==0:
+                inc=100
+            else:
+                inc=50
+            vmax=vmax+inc
+            vmin=vmin-inc
+            if (vmax%100)==0:
+                inc=100
+            else:
+                inc=50
+        elif abs(vmax)>=1000 and myround100(vmax,0)>vmax:
+            vmax=myround1000(vmax)
+            vmin=myround1000(vmin)
             inc=vmax/10
-        else:
-            vmax=myround10(vmax)
-            vmin=myround10(vmin)
+        elif abs(vmax)>=1000 and myround100(vmax,0)<vmax:
+            vmax=myround1000(vmax)
+            vmin=myround1000(vmin)
             inc=vmax/10
             vmax=vmax+inc
             vmin=vmin-inc
+        else:
+            inc=vmax/10
         var[np.where(var>vmax)]=vmax
         var[np.where(var<vmin)]=vmin
         print('The range will be approximated based on data: vmin %.2f, vmax %.2f, inc %.2f' %(vmin,vmax,inc))
@@ -138,3 +175,4 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     plt.title(ltitle,loc='right')
     plt.show()
     return figure
+
