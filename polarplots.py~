@@ -31,6 +31,9 @@ def myround50(x, prec=1, base=50):
 
 def myround100(x, prec=1, base=100):
     return round(base * round(float(x)/base),prec)
+
+def myround01(x, prec=1, base=.1):
+    return round(base * round(float(x)/base),prec)
         
 def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle='',clabel='',
               zeroline=0,cmap='RdBu_r',contours=0,hemisphere='N',fontsize=8,show0=0,
@@ -122,10 +125,20 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
             inc=vmax/10
             vmax=vmax+inc
             vmin=vmin-inc
+        elif abs(vmax)>0 and abs(vmax)<=1 and myround01(vmax,0)>vmax:
+            vmax=myround01(vmax)
+            vmin=myround01(vmin)
+            inc=vmax/10
+        elif abs(vmax)>0 and abs(vmax)<=1 and myround01(vmax,0)<vmax:
+            vmax=myround01(vmax)
+            vmin=myround01(vmin)
+            inc=myround01(vmax)/10
+            vmax=vmax+inc
+            vmin=vmin-inc
         else:
             inc=vmax/10
-        var[np.where(var>vmax)]=vmax
-        var[np.where(var<vmin)]=vmin
+        var[np.where(var>vmax)]=vmax-vmax*0.01
+        var[np.where(var<vmin)]=vmin+vmin*0.01
         print('The range will be approximated based on data: vmin %.2f, vmax %.2f, inc %.2f' %(vmin,vmax,inc))
             
     if show0==1:    
@@ -175,4 +188,6 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     plt.title(ltitle,loc='right')
     plt.show()
     return figure
+
+
 
