@@ -48,7 +48,6 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     ax = figure.add_subplot(111)
       
     if vmin==0 or vmax==0 or inc==0:
-        print('Warning: vmin, vmax and inc were not given.')
         mymin=np.float(np.min(var))
         mymax=np.float(np.max(var))
         if abs(mymin)>abs(mymax):
@@ -125,11 +124,11 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
             inc=vmax/10
             vmax=vmax+inc
             vmin=vmin-inc
-        elif abs(vmax)>0 and abs(vmax)<=1 and myround01(vmax,0)>vmax:
+        elif abs(vmax)>=0.1 and abs(vmax)<=1 and myround01(vmax,0)>vmax:
             vmax=myround01(vmax)
             vmin=myround01(vmin)
             inc=vmax/10
-        elif abs(vmax)>0 and abs(vmax)<=1 and myround01(vmax,0)<vmax:
+        elif abs(vmax)>=0.1 and abs(vmax)<=1 and myround01(vmax,0)<vmax:
             vmax=myround01(vmax)
             vmin=myround01(vmin)
             inc=myround01(vmax)/10
@@ -137,9 +136,9 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
             vmin=vmin-inc
         else:
             inc=vmax/10
-        var[np.where(var>vmax)]=vmax-vmax*0.01
-        var[np.where(var<vmin)]=vmin+vmin*0.01
-        print('The range will be approximated based on data: vmin %.2f, vmax %.2f, inc %.2f' %(vmin,vmax,inc))
+        var[np.where(var>=vmax)]=vmax-inc
+        var[np.where(var<=vmin)]=vmin+inc
+        print('vmin %.2f, vmax %.2f, inc %.2f' %(vmin,vmax,inc))
             
     if show0==1:    
         ncolors=np.shape(np.arange(vmin,vmax,inc))[0]
@@ -165,17 +164,21 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
     x, y = m(*np.meshgrid(lon_c,lat))
     cbar=cm.get_cmap(cmap,ncolors)
-    #cbar.set_under(color='black')
-    #cbar.set_over(color='black')
     m.contourf(x,y,var_c,levels=levels,cmap=cbar)
     m.drawcoastlines(linewidth=0.3)
-    m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,1,1],linewidth=0.30, fontsize=fontsize)
-    m.drawparallels(np.arange(-90, 91, 30),linewidth=0.3)
-    if len(levels)>22:
+    m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=fontsize)
+    m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
+    if len(levels)>22 and len(levels)<49 and show0==0:
+        #cblevels=levels[1:-1:2]
         cblevels=np.concatenate((levels[1:int((len(levels)/2)+1):2],levels[int(len(levels)/2):-1:2]))
-    else:
+    elif len(levels)<=22 and show0==0:
         cblevels=levels[1:-1]
-    cb=plt.colorbar(shrink=0.7,pad=0.08,ticks=cblevels,label=clabel)
+    elif len(levels)<=22 and show0==1:
+        cblevels=levels[1:-1]
+    else:
+        cblevels=levels[1:-1:2]
+        
+    cb=plt.colorbar(shrink=0.7,pad=0.1,ticks=cblevels,label=clabel)
     cb.ax.tick_params(labelsize=fontsize)
     if zeroline==1:
         m2=plt.contour(x,y,var_c,levels=[0],colors='k',add_colorbar=False)
@@ -187,7 +190,6 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     plt.title(rtitle,loc='left')
     plt.title(ltitle,loc='right')
     plt.show()
+    print(len(levels))
     return figure
-
-
 

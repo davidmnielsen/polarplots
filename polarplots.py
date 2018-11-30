@@ -115,12 +115,12 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
             else:
                 inc=50
         elif abs(vmax)>=1000 and myround100(vmax,0)>vmax:
-            vmax=myround1000(vmax)
-            vmin=myround1000(vmin)
+            vmax=myround100(vmax)
+            vmin=myround100(vmin)
             inc=vmax/10
         elif abs(vmax)>=1000 and myround100(vmax,0)<vmax:
-            vmax=myround1000(vmax)
-            vmin=myround1000(vmin)
+            vmax=myround100(vmax)
+            vmin=myround100(vmin)
             inc=vmax/10
             vmax=vmax+inc
             vmin=vmin-inc
