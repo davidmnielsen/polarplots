@@ -1,3 +1,5 @@
+#!/usr/bin/env -u python
+
 def draw_round_frame(m, width_percent=0.05, degree=45):
     # Adapted from:
     # https://stackoverflow.com/questions/47431242/matplotlib-create-lat-lon-white-black-round-bounding-box-around-basemap
@@ -15,14 +17,14 @@ def draw_round_frame(m, width_percent=0.05, degree=45):
 
     for i, (from_angle, to_angle) in enumerate(list(zip(angle_breaks[:-1], angle_breaks[1:]))):
         color='white' if i%2 == 0 else 'black'
-        wedge = Wedge((centre_x, centre_y), outer_radius, from_angle, to_angle, width=outer_radius - inner_radius, 
+        wedge = Wedge((centre_x, centre_y), outer_radius, from_angle, to_angle, width=outer_radius - inner_radius,
                       facecolor=color,
                       edgecolor='black',
                       clip_on=False,
                       ls='solid',
                       lw=1)
         ax.add_patch(wedge)
-        
+
 def myround(x, prec=1, base=.5):
     return round(base * round(float(x)/base),prec)
 
@@ -34,7 +36,7 @@ def myround100(x, prec=1, base=100):
 
 def myround01(x, prec=1, base=.1):
     return round(base * round(float(x)/base),prec)
-        
+
 def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle='',clabel='',
               zeroline=0,cmap='RdBu_r',contours=0,hemisphere='N',fontsize=8,show0=0,
               resolution='c',figsize=(8,8),triangle=1):
@@ -44,14 +46,9 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     import matplotlib.pyplot as plt
     from matplotlib import cm
 
-    # Make sure everything is a numpy array (not xarray dataframes)
-    var=var.values
-    lat=lat.values
-    lon=lon.values
-    
     figure=plt.figure(figsize=figsize)
     ax = figure.add_subplot(111)
-      
+
     if vmin==0 or vmax==0 or inc==0:
         mymin=np.float(np.min(var))
         mymax=np.float(np.max(var))
@@ -141,14 +138,11 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
             vmin=vmin-inc
         else:
             inc=vmax/10
-        
+        var[np.where(var>=vmax)]=vmax-inc
+        var[np.where(var<=vmin)]=vmin+inc
+        print('vmin %.2f, vmax %.2f, inc %.2f' %(vmin,vmax,inc))
 
-    var[np.where(var>=vmax)]=vmax
-    var[np.where(var<=vmin)[0]]=vmin
-    #print('vmin %.2f, vmax %.2f, inc %.2f' %(vmin,vmax,inc))
-    
-            
-    if show0==1:    
+    if show0==1:
         ncolors=np.shape(np.arange(vmin,vmax,inc))[0]
         levels=np.arange(vmin,vmax+inc,inc)
     elif show0==0:
@@ -159,11 +153,9 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     else:
         print('Invalid option: show0 arg. must be 0 or 1.')
         return figure
-        
+
     var_c, lon_c = addcyclic(var, lon)
-    var_c=var_c[np.where(lat>=lat0)[0],:]
-    lat=lat[np.where(lat>=lat0)[0]]
-    
+
     if hemisphere=='N' or hemisphere=='n':
         proj='npstere'
     elif hemisphere=='S' or hemisphere=='s':
@@ -173,36 +165,25 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
         return figure
     m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
     x, y = m(*np.meshgrid(lon_c,lat))
-    #cbar=cm.get_cmap(cmap,ncolors)
-    
-    if len(levels)>22 and len(levels)<49 and show0==0:
-        #cblevels=levels[1:-1:2]
-        cblevels=np.concatenate((levels[1:int((len(levels)/2)+1):2],levels[int(len(levels)/2):-1:2]))
-    elif len(levels)<=22 and show0==0:
-        from matplotlib.colors import ListedColormap
-        viridis = cm.get_cmap(cmap, 256)
-        newcolors = viridis(np.linspace(0, 1, 256))
-        white = np.array([1, 1, 1, 1])
-        newcolors[int(256/2)-1:int(256/2)+1, :] = white
-        newcmp = ListedColormap(newcolors)
-        cbar=cm.get_cmap(newcmp,ncolors)
-        cblevels=levels[1:-1]
-    elif len(levels)<=22 and show0==1:
-        cbar=cm.get_cmap(cmap,ncolors)
-        cblevels=levels[1:-1]
-    else:
-        cbar=cm.get_cmap(cmap,ncolors)
-        cblevels=levels[1:-1:2]
-
+    cbar=cm.get_cmap(cmap,ncolors)
     m.contourf(x,y,var_c,levels=levels,cmap=cbar)
     m.drawcoastlines(linewidth=0.3)
     m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=fontsize)
     m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
+    if len(levels)>22 and len(levels)<49 and show0==0:
+        #cblevels=levels[1:-1:2]
+        cblevels=np.concatenate((levels[1:int((len(levels)/2)+1):2],levels[int(len(levels)/2):-1:2]))
+    elif len(levels)<=22 and show0==0:
+        cblevels=levels[1:-1]
+    elif len(levels)<=22 and show0==1:
+        cblevels=levels[1:-1]
+    else:
+        cblevels=levels[1:-1:2]
 
-    cb=plt.colorbar(shrink=0.8,pad=0.1,ticks=cblevels,label=clabel)
+    cb=plt.colorbar(shrink=0.7,pad=0.1,ticks=cblevels,label=clabel)
     cb.ax.tick_params(labelsize=fontsize)
     if zeroline==1:
-        m2=plt.contour(x,y,var_c,levels=[0],colors='k')
+        m2=plt.contour(x,y,var_c,levels=[0],colors='k',add_colorbar=False)
         plt.clabel(m2, m2.levels, inline=False, fontsize=10, fmt='%.1f')
     if frame==1:
         draw_round_frame(m)
@@ -211,4 +192,24 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
     plt.title(rtitle,loc='left')
     plt.title(ltitle,loc='right')
     plt.show()
+    print(len(levels))
     return figure
+
+# Usual imports
+import numpy as np
+import xarray as xr
+import pandas as pd
+
+
+# Load example data
+ds=xr.open_dataset('pattern.nc', decode_times=False)
+mylat=ds['lat'][:]
+mylon=ds['lon'][:]
+myvar=ds['var151'][0,:,:]
+
+# Simple plot, automatic color range and no customizations:
+myfig=polaranom(mylat,mylon,myvar)
+myfig.savefig('test1.png', dpi=300)
+
+
+
