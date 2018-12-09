@@ -26,7 +26,7 @@ myvar=ds['var151'][0,:,:].values
 ```python
 myfig=pp.polaranom(mylat,mylon,myvar)
 ```
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex1.pdf "ex1.pdf")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex1.png "ex1.png")
 
 Save your figure in different formats and resolutions:
 ```python
@@ -65,7 +65,7 @@ myfig=pp.polaranom(mylat,mylon,myvar,
 
 myfig.savefig('panel_1x2.pdf')
 ``` 
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/panel_1x2.pdf "panel_1x2.pdf")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/panel_1x2.png "panel_1x2.png")
 
 ### Example 4: bigger panels
 ```python
@@ -94,7 +94,7 @@ myfig=pp.polaranom(mylat,mylon,myvar+5,
                 frame=1)
 myfig.savefig('spectral.pdf')
 ```
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/spectral.pdf "spectral.pdf")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/spectral.png "spectral.png")
 
 David Nielsen
 
