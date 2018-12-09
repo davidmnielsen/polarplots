@@ -47,8 +47,8 @@ myfig=pp.polaranom(mylat,mylon,myvar,
                    contours=1,zeroline=1,lat0=20,
                    rtitle='EOF1 SLP',
                    ltitle='ERA Interim',
-                   clabel='loadings'
-                   cmap='BuRd_r'
+                   clabel='loadings',
+                   cmap='RdBu',
                    )
 ```
 ![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex2.png "ex2.png")

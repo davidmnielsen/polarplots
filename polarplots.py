@@ -272,7 +272,7 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
         cb.ax.tick_params(labelsize=cbfontsize)
     if zeroline==1:
         m2=plt.contour(x,y,var_c,levels=[0],colors='k')
-        plt.clabel(m2, m2.levels, inline=False, fontsize=fontsize, fmt='%.1f')
+        plt.clabel(m2, m2.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
     if frame==1:
         draw_round_frame(m)
     if contours==1:
