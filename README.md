@@ -54,7 +54,8 @@ myfig=pp.polaranom(mylat,mylon,myvar,
 ![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex2.png "ex2.png")
 
 ### Example 3: Simple panels
-To combine several figures in one panel, specify `ncols` and `nrows` for the number of columns and rows. Each figure is placed within the panel according to the counter `mapid`.  In order to place subplots within the same panel, the figure object needs to be passed as an argument from the 2nd plot on, using the argument `figure`:
+To combine several figures in one panel, specify `ncols` and `nrows` for the number of columns and rows. Each figure is placed within the panel according to the counter `mapid`.  In order to place subplots within the same panel, the figure object needs to be passed as an argument from the 2nd plot on, using the argument `figure`. For some common set ups, a common colorbar is automatically drawn.
+
 ```python
 myfig=pp.polaranom(mylat,mylon,myvar,
                 ncols=2,nrows=1,mapid=1)
@@ -68,6 +69,9 @@ myfig.savefig('panel_1x2.pdf')
 ![alt text](https://github.com/davidmnielsen/polarplots/blob/master/panel_1x2.png "panel_1x2.png")
 
 ### Example 4: bigger panels
+
+Do some smart loops to plot several maps. Don't worry about label location and figure size.
+
 ```python
 nrows=4
 ncols=3
@@ -80,8 +84,9 @@ for i in range(12):
         myfig=pp.polaranom(mylat,mylon,myvar,lat0=30,figure=myfig,ltitle='%d' %(i+1),
                         nrows=nrows, ncols=ncols,mapid=i+1)
 
-myfig.savefig('panel_4x3.pdf')
+myfig.savefig('panel_4x3.png')
 ```
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/panel_4x3.png "panel_4x3.png")
 
 ### Example 5: less useful customizations
 In this example, the argument `show0` is set to 1 to force the colorbar to show the number 0. This can be useful for cases when data are not anomalies, and sequential color scales are used. We also change the colormap and turn on the arguably nice-looking frame, adapted from [this forum post](https://stackoverflow.com/questions/47431242/matplotlib-create-lat-lon-white-black-round-bounding-box-around-basemap).  
