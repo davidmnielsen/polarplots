@@ -39,8 +39,8 @@ def myround01(x, prec=1, base=.1):
 
 def getRange(var,vmin,vmax,inc):
     import numpy as np
-    mymin=np.float(np.min(var))
-    mymax=np.float(np.max(var))
+    mymin=np.float(np.nanmin(var))
+    mymax=np.float(np.nanmax(var))
     if abs(mymin)>abs(mymax):
         vmin=mymin
         vmax=-mymin
@@ -155,10 +155,10 @@ def getCbar(levels,show0,cmap,ncolors):
             cblevels=levels[1:-1:2]
         return cbar, cblevels
 
-def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
+def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               resolution='c',figsize=(8,8),commonbar=None,
-              nrows=1,ncols=1,mapid=1,
+              nrows=1,ncols=1,mapid=1,draw=True,
               drawMeridians=True, drawParallels=True,meridFontsize=6,
               figure=False):
 
@@ -242,7 +242,8 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
         print('Invalid option: show0 arg. must be 0 or 1.')
         return figure
 
-    lat0=min(lat)
+    if lat0==False:
+        lat0=min(lat)
     var_c, lon_c = addcyclic(var3, lon)
     var_c=var_c[np.where(lat>=lat0)[0],:]
     lat=lat[np.where(lat>=lat0)[0]]
@@ -290,5 +291,7 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=0,frame=0,rtitle='',ltitle=''
         cbar_ax = figure.add_axes(cbarcoords)
         mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax, orientation='horizontal')
         mycb.ax.tick_params(labelsize=cbfontsize)
+    if draw:
+    	plt.show()
     return figure
 
