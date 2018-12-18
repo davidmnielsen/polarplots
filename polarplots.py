@@ -155,11 +155,27 @@ def getCbar(levels,show0,cmap,ncolors):
             cblevels=levels[1:-1:2]
         return cbar, cblevels
 
+def drawbox(boxlat,boxlon,m,boxcol,boxlw):
+    from mpl_toolkits.basemap import Basemap, addcyclic
+    import matplotlib.pyplot as plt
+    import numpy as np
+    for l in range(len(boxlat)-1):
+        linlat = np.linspace(boxlat[l],boxlat[l+1])
+        linlon = np.linspace(boxlon[l],boxlon[l+1])
+        xs,ys = m(linlon,linlat)
+        m.plot(xs,ys, lw=boxlw, color=boxcol)
+    return
+
 def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               resolution='c',figsize=(8,8),commonbar=None,
               nrows=1,ncols=1,mapid=1,draw=True,
               drawMeridians=True, drawParallels=True,meridFontsize=6,
+              boxlat=False, boxlon=False, boxcol='k', boxlw=2,
+              boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2,
+              boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2,
+              boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2,
+              boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2,
               figure=False):
 
     # Format set-ups:
@@ -267,6 +283,17 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitl
         m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=meridFontsize)
     if drawParallels==True:
         m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
+
+    if boxlat!=False:
+        drawbox(boxlat,boxlon,m,boxcol,boxlw)
+    if boxlat2!=False:
+        drawbox(boxlat2,boxlon2,m,boxcol2,boxlw2)
+    if boxlat3!=False:
+        drawbox(boxlat3,boxlon3,m,boxcol3,boxlw3)
+    if boxlat4!=False:
+        drawbox(boxlat4,boxlon4,m,boxcol4,boxlw4)
+    if boxlat5!=False:
+        drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5)
 
     if colorbar==1:
         cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel)
