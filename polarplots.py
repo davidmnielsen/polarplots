@@ -1,5 +1,3 @@
-#!/usr/env/python
-
 def draw_round_frame(m, width_percent=0.05, degree=45):
     # Adapted from:
     # https://stackoverflow.com/questions/47431242/matplotlib-create-lat-lon-white-black-round-bounding-box-around-basemap
@@ -166,7 +164,7 @@ def drawbox(boxlat,boxlon,m,boxcol,boxlw):
         m.plot(xs,ys, lw=boxlw, color=boxcol)
     return
 
-def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
+def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               resolution='c',figsize=(8,8),commonbar=None,
               nrows=1,ncols=1,mapid=1,draw=True,
@@ -176,149 +174,169 @@ def polaranom(lat,lon,var,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitl
               boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2,
               boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2,
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2,
-              figure=False):
+              figure=False, autoformat=True,
+              ts=False,tsx=False,tsy=False):
+    
+    if ts==False:
+        # Format set-ups:
+        if autoformat:
+            if (nrows==4 and ncols==3):
+                figsize=(9,12)
+                meridFontsize=5
+                cbfontsize=8
+                colorbar=0
+                if mapid==1:
+                    commonbar='h'
+                    bottom=0.1
+                    cbarcoords=[0.15, 0.05, 0.7, 0.02]
+            elif (nrows==2 and ncols==2):
+                figsize=(10,10)
+                meridFontsize=7
+                cbfontsize=8
+                colorbar=0
+                if mapid==1:
+                    commonbar='h'
+                    bottom=0.1
+                    cbarcoords=[0.15, 0.055, 0.7, 0.02]
+            elif (nrows==1 and ncols==3):
+                figsize=(12,5)
+                meridFontsize=7
+                cbfontsize=8
+                colorbar=0
+                if mapid==1:
+                    commonbar='h'
+                    bottom=0.15
+                    cbarcoords=[0.15, 0.1, 0.7, 0.04]
+            elif (nrows==1 and ncols==2):
+                figsize=(10,6)
+                meridFontsize=7
+                cbfontsize=8
+                colorbar=0
+                if mapid==1:
+                    commonbar='h'
+                    bottom=0.15
+                    cbarcoords=[0.15, 0.1, 0.7, 0.04]
+            elif (nrows==3 and ncols==1):
+                figsize=(5,12)
+                meridFontsize=7
+                cbfontsize=8
+                colorbar=0
+                if mapid==1:
+                    commonbar='h'
+                    bottom=0.1
+                    cbarcoords=[0.15, 0.05, 0.7, 0.02]
+            else:
+                if ((nrows!=1 or ncols!=1) and mapid==1):
+                    if commonbar=='h':
+                        cbarcoords=[0.15, 0.05, 0.7, 0.02]
+                        bottom=0.1
+                    elif commonbar=='v':
+                        cbarcoords=[0.85, 0.15, 0.02, 0.7]
 
-    # Format set-ups:
-    if (nrows==4 and ncols==3):
-        figsize=(9,12)
-        meridFontsize=5
-        cbfontsize=8
-        colorbar=0
+        import numpy as np
+        from mpl_toolkits.basemap import Basemap, addcyclic
+        import matplotlib.pyplot as plt
+
         if mapid==1:
-            commonbar='h'
-            bottom=0.1
-            cbarcoords=[0.15, 0.05, 0.7, 0.02]
-    elif (nrows==2 and ncols==2):
-        figsize=(10,10)
-        meridFontsize=7
-        cbfontsize=8
-        colorbar=0
-        if mapid==1:
-            commonbar='h'
-            bottom=0.1
-            cbarcoords=[0.15, 0.055, 0.7, 0.02]
-    elif (nrows==1 and ncols==3):
-        figsize=(12,5)
-        meridFontsize=7
-        cbfontsize=8
-        colorbar=0
-        if mapid==1:
-            commonbar='h'
-            bottom=0.15
-            cbarcoords=[0.15, 0.1, 0.7, 0.04]
-    elif (nrows==1 and ncols==2):
-        figsize=(10,6)
-        meridFontsize=7
-        cbfontsize=8
-        colorbar=0
-        if mapid==1:
-            commonbar='h'
-            bottom=0.15
-            cbarcoords=[0.15, 0.1, 0.7, 0.04]
-    elif (nrows==3 and ncols==1):
-        figsize=(5,12)
-        meridFontsize=7
-        cbfontsize=8
-        colorbar=0
-        if mapid==1:
-            commonbar='h'
-            bottom=0.1
-            cbarcoords=[0.15, 0.05, 0.7, 0.02]
+            figure=plt.figure(figsize=figsize)
+        ax = plt.subplot(nrows,ncols,mapid)
+
+        if vmin==0 or vmax==0 or inc==0:
+            vmin, vmax, inc =getRange(var,vmin,vmax,inc)
+
+        var2=np.where(var>vmax,vmax-inc,var)
+        var3=np.where(var2<vmin,vmin+inc,var2)
+
+        if show0==1:
+            ncolors=np.shape(np.arange(vmin,vmax,inc))[0]
+            levels=np.arange(vmin,vmax+inc,inc)
+        elif show0==0:
+            ncolors=np.shape(np.arange(vmin,vmax,inc))[0]-1
+            neglevs=np.arange(vmin,0,inc)
+            poslevs=np.arange(inc,vmax+inc,inc)
+            levels=np.concatenate((neglevs,poslevs))
+        else:
+            print('Invalid option: show0 arg. must be 0 or 1.')
+            return figure
+
+        if lat0==False:
+            lat0=min(lat)
+        var_c, lon_c = addcyclic(var3, lon)
+        var_c=var_c[np.where(lat>=lat0)[0],:]
+        lat=lat[np.where(lat>=lat0)[0]]
+
+        if hemisphere=='N' or hemisphere=='n':
+            proj='npstere'
+        elif hemisphere=='S' or hemisphere=='s':
+            proj='spstere'
+        else:
+            print('Invalid hemisphere: should be "N" or "S".')
+            return figure
+
+        m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
+        x, y = m(*np.meshgrid(lon_c,lat))
+
+        cbar, cblevels = getCbar(levels,show0,cmap,ncolors)
+
+        img=m.contourf(x,y,var_c,levels=levels,cmap=cbar)
+        m.drawcoastlines(linewidth=0.3)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=meridFontsize)
+        if drawParallels==True:
+            m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
+
+        if boxlat!=False:
+            drawbox(boxlat,boxlon,m,boxcol,boxlw)
+        if boxlat2!=False:
+            drawbox(boxlat2,boxlon2,m,boxcol2,boxlw2)
+        if boxlat3!=False:
+            drawbox(boxlat3,boxlon3,m,boxcol3,boxlw3)
+        if boxlat4!=False:
+            drawbox(boxlat4,boxlon4,m,boxcol4,boxlw4)
+        if boxlat5!=False:
+            drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5)
+
+        if colorbar==1:
+            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False)
+            cb.ax.tick_params(labelsize=cbfontsize)
+        if zeroline==1:
+            m2=plt.contour(x,y,var_c,levels=[0],colors='k')
+            plt.clabel(m2, m2.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
+        if frame==1:
+            draw_round_frame(m)
+        if contours==1:
+            plt.contour(x,y,var_c,levels=levels,colors='k',linewidths=0.5)
+        plt.title(rtitle,loc='right')
+        plt.title(ltitle,loc='left')
+
+        if commonbar=='v':
+            figure.subplots_adjust(right=0.8,left=0.05,top=0.95,bottom=0.05)
+            cbar_ax = figure.add_axes(cbarcoords)
+            mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax,drawedges=False)
+            mycb.ax.tick_params(labelsize=cbfontsize)
+        elif commonbar=='h':
+            figure.subplots_adjust(bottom=bottom,top=0.95,left=0.05,right=0.95,hspace=0.1)
+            cbar_ax = figure.add_axes(cbarcoords)
+            mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax, orientation='horizontal',drawedges=False)
+            mycb.ax.tick_params(labelsize=cbfontsize)
+        if draw:
+            plt.show()
+    
     else:
-        if ((nrows!=1 or ncols!=1) and mapid==1):
-            if commonbar=='h':
-                cbarcoords=[0.15, 0.05, 0.7, 0.02]
-                bottom=0.1
-            elif commonbar=='v':
-                cbarcoords=[0.85, 0.15, 0.02, 0.7]
-
-    import numpy as np
-    from mpl_toolkits.basemap import Basemap, addcyclic
-    import matplotlib.pyplot as plt
-
-    if mapid==1:
-        figure=plt.figure(figsize=figsize)
-    ax = plt.subplot(nrows,ncols,mapid)
-
-    if vmin==0 or vmax==0 or inc==0:
-        vmin, vmax, inc =getRange(var,vmin,vmax,inc)
-
-    var2=np.where(var>vmax,vmax-inc,var)
-    var3=np.where(var2<vmin,vmin+inc,var2)
-
-    if show0==1:
-        ncolors=np.shape(np.arange(vmin,vmax,inc))[0]
-        levels=np.arange(vmin,vmax+inc,inc)
-    elif show0==0:
-        ncolors=np.shape(np.arange(vmin,vmax,inc))[0]-1
-        neglevs=np.arange(vmin,0,inc)
-        poslevs=np.arange(inc,vmax+inc,inc)
-        levels=np.concatenate((neglevs,poslevs))
-    else:
-        print('Invalid option: show0 arg. must be 0 or 1.')
-        return figure
-
-    if lat0==False:
-        lat0=min(lat)
-    var_c, lon_c = addcyclic(var3, lon)
-    var_c=var_c[np.where(lat>=lat0)[0],:]
-    lat=lat[np.where(lat>=lat0)[0]]
-
-    if hemisphere=='N' or hemisphere=='n':
-        proj='npstere'
-    elif hemisphere=='S' or hemisphere=='s':
-        proj='spstere'
-    else:
-        print('Invalid hemisphere: should be "N" or "S".')
-        return figure
-
-    m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
-    x, y = m(*np.meshgrid(lon_c,lat))
-
-    cbar, cblevels = getCbar(levels,show0,cmap,ncolors)
-
-    img=m.contourf(x,y,var_c,levels=levels,cmap=cbar)
-    m.drawcoastlines(linewidth=0.3)
-    if drawMeridians==True:
-        m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=meridFontsize)
-    if drawParallels==True:
-        m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
-
-    if boxlat!=False:
-        drawbox(boxlat,boxlon,m,boxcol,boxlw)
-    if boxlat2!=False:
-        drawbox(boxlat2,boxlon2,m,boxcol2,boxlw2)
-    if boxlat3!=False:
-        drawbox(boxlat3,boxlon3,m,boxcol3,boxlw3)
-    if boxlat4!=False:
-        drawbox(boxlat4,boxlon4,m,boxcol4,boxlw4)
-    if boxlat5!=False:
-        drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5)
-
-    if colorbar==1:
-        cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel)
-        cb.ax.tick_params(labelsize=cbfontsize)
-    if zeroline==1:
-        m2=plt.contour(x,y,var_c,levels=[0],colors='k')
-        plt.clabel(m2, m2.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
-    if frame==1:
-        draw_round_frame(m)
-    if contours==1:
-        plt.contour(x,y,var_c,levels=levels,colors='k',linewidths=0.5)
-    plt.title(rtitle,loc='right')
-    plt.title(ltitle,loc='left')
-
-    if commonbar=='v':
-        figure.subplots_adjust(right=0.8,left=0.05,top=0.95,bottom=0.05)
-        cbar_ax = figure.add_axes(cbarcoords)
-        mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax)
-        mycb.ax.tick_params(labelsize=cbfontsize)
-    elif commonbar=='h':
-        figure.subplots_adjust(bottom=bottom,top=0.95,left=0.05,right=0.95,hspace=0.1)
-        cbar_ax = figure.add_axes(cbarcoords)
-        mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax, orientation='horizontal')
-        mycb.ax.tick_params(labelsize=cbfontsize)
-    if draw:
-    	plt.show()
+        import numpy as np
+        import matplotlib.pyplot as plt
+        ax = figure.add_subplot(nrows,ncols,mapid)
+        if tsx==False:
+            ax.plot(tsy)
+        else:
+            ax.plot(tsx,tsy)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.yaxis.set_ticks_position('left')
+        ax.xaxis.set_ticks_position('bottom')        
+        if draw:
+            plt.show()
+        
     return figure
+
 

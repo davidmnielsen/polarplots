@@ -26,7 +26,7 @@ myvar=ds['var151'][0,:,:].values
 ```python
 myfig=pp.polaranom(mylat,mylon,myvar)
 ```
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex1.png "ex1.png")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex_figures/ex1.png "ex1.png")
 
 Save your figure in different formats and resolutions:
 ```python
@@ -51,7 +51,7 @@ myfig=pp.polaranom(mylat,mylon,myvar,
                    cmap='RdBu',
                    )
 ```
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex2.png "ex2.png")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex_figures/ex2.png "ex2.png")
 
 ### Example 3: Simple panels
 To combine several figures in one panel, specify `ncols` and `nrows` for the number of columns and rows. Each figure is placed within the panel according to the counter `mapid`.  In order to place subplots within the same panel, the figure object needs to be passed as an argument from the 2nd plot on, using the argument `figure`. For some common set ups, a common colorbar is automatically drawn.
@@ -66,7 +66,7 @@ myfig=pp.polaranom(mylat,mylon,myvar,
 
 myfig.savefig('panel_1x2.pdf')
 ``` 
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/panel_1x2.png "panel_1x2.png")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex_figures/panel_1x2.png "panel_1x2.png")
 
 ### Example 4: bigger panels
 
@@ -86,7 +86,7 @@ for i in range(12):
 
 myfig.savefig('panel_4x3.png')
 ```
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/panel_4x3.png "panel_4x3.png")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex_figures/panel_4x3.png "panel_4x3.png")
 
 ### Example 5: less useful customizations
 In this example, the argument `show0` is set to 1 to force the colorbar to show the number 0. This can be useful for cases when data are not anomalies, and sequential color scales are used. We also change the colormap and turn on the arguably nice-looking frame, adapted from [this forum post](https://stackoverflow.com/questions/47431242/matplotlib-create-lat-lon-white-black-round-bounding-box-around-basemap).  
@@ -99,7 +99,7 @@ myfig=pp.polaranom(mylat,mylon,myvar+5,
                 frame=1)
 myfig.savefig('spectral.pdf')
 ```
-![alt text](https://github.com/davidmnielsen/polarplots/blob/master/spectral.png "spectral.png")
+![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex_figures/spectral.png "spectral.png")
 
 David Nielsen
 
