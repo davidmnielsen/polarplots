@@ -102,9 +102,9 @@ myfig.savefig('spectral.pdf')
 ![alt text](https://github.com/davidmnielsen/polarplots/blob/master/ex_figures/spectral.png "spectral.png")
 
 ### Example 6: Draw boxes and lines
-Use arguments `boxlon` and `boxlat` to provide a list with the coordinates of the corners of a box, as in the example below on the left. Note that the coordinates must be ordered in a cycle. The function simply draws lines between two coordinates, so open poligons or simple lines are also possible. Line color and width are controled with arguments `boxcol` and `boxlw`, respectively. Up until 5 elements are possible simultaneously via numering arguments:  `boxlon`, `boxlon2`, `boxlo3`... (please feel free to do it in a smarter way).
+Use arguments `boxlon` and `boxlat` to provide a list with the coordinates of the corners of a box, as in the example below on the left. Note that the coordinates must be ordered in a cycle. The function simply draws lines between two coordinates, so open polygons or simple lines are also possible. Line color and width are controled with arguments `boxcol` and `boxlw`, respectively. Up until 5 elements are possible simultaneously via numbering arguments from the second on:  `boxlon`, `boxlon2`, `boxlo3`... (please feel free to do it in a smarter way).
 
-```
+```python
 myfig=pp.polaranom(lat,lon,myvar[0,:,:],ltitle='Simple Box',
                    nrows=1,ncols=2,mapid=1,draw=False,
                    
