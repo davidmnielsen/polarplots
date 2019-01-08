@@ -153,7 +153,7 @@ def getCbar(levels,show0,cmap,ncolors):
             cblevels=levels[1:-1:2]
         return cbar, cblevels
 
-def drawbox(boxlat,boxlon,m,boxcol,boxlw):
+def drawbox(boxlat,boxlon,m,boxcol,boxlw,boxls):
     from mpl_toolkits.basemap import Basemap, addcyclic
     import matplotlib.pyplot as plt
     import numpy as np
@@ -161,7 +161,7 @@ def drawbox(boxlat,boxlon,m,boxcol,boxlw):
         linlat = np.linspace(boxlat[l],boxlat[l+1])
         linlon = np.linspace(boxlon[l],boxlon[l+1])
         xs,ys = m(linlon,linlat)
-        m.plot(xs,ys, lw=boxlw, color=boxcol)
+        m.plot(xs,ys, lw=boxlw, ls=boxls, color=boxcol)
     return
 
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
@@ -169,11 +169,11 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               resolution='c',figsize=(8,8),commonbar=None,
               nrows=1,ncols=1,mapid=1,draw=True,
               drawMeridians=True, drawParallels=True,meridFontsize=6,
-              boxlat=False, boxlon=False, boxcol='k', boxlw=2,
-              boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2,
-              boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2,
-              boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2,
-              boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2,
+              boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
+              boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
+              boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2, boxls3='-',
+              boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2, boxls4='-',
+              boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True,
               ts=False,tsx=False,tsy=False):
     
@@ -286,15 +286,15 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
 
         if boxlat!=False:
-            drawbox(boxlat,boxlon,m,boxcol,boxlw)
+            drawbox(boxlat,boxlon,m,boxcol,boxlw,boxls)
         if boxlat2!=False:
-            drawbox(boxlat2,boxlon2,m,boxcol2,boxlw2)
+            drawbox(boxlat2,boxlon2,m,boxcol2,boxlw2,boxls2)
         if boxlat3!=False:
-            drawbox(boxlat3,boxlon3,m,boxcol3,boxlw3)
+            drawbox(boxlat3,boxlon3,m,boxcol3,boxlw3,boxls3)
         if boxlat4!=False:
-            drawbox(boxlat4,boxlon4,m,boxcol4,boxlw4)
+            drawbox(boxlat4,boxlon4,m,boxcol4,boxlw4,boxls4)
         if boxlat5!=False:
-            drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5)
+            drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5,boxls5)
 
         if colorbar==1:
             cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False)
