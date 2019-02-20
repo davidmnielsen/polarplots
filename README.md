@@ -58,10 +58,10 @@ To combine several figures in one panel, specify `ncols` and `nrows` for the num
 
 ```python
 myfig=pp.polaranom(mylat,mylon,myvar,
-                ncols=2,nrows=1,mapid=1)
+                ncols=2,nrows=1,mapid=1, draw=False)
 
 myfig=pp.polaranom(mylat,mylon,myvar,
-                ncols=2,nrows=1,mapid=2
+                ncols=2,nrows=1,mapid=2, draw=True, # we just draw the figure on the screen when all subplots are ready
                 figure=myfig) # here we provide the figure object generated in the previous plot
 
 myfig.savefig('panel_1x2.pdf')
@@ -78,11 +78,14 @@ ncols=3
 
 for i in range(12):
     if i==0:
-        myfig=pp.polaranom(mylat,mylon,myvar,lat0=30,clabel='colorbar label',ltitle='%d' %(i+1),
-                        nrows=nrows, ncols=ncols,mapid=i+1)
+        myfig=pp.polaranom(mylat,mylon,myvar,lat0=30,ltitle='%d' %(i+1),
+                        nrows=nrows, ncols=ncols,mapid=i+1, draw=False)
+    elif i==11:
+        myfig=pp.polaranom(mylat,mylon,myvar,lat0=30,figure=myfig,clabel='colorbar label',ltitle='%d' %(i+1),
+                        nrows=nrows, ncols=ncols,mapid=i+1, draw=True)
     else:
         myfig=pp.polaranom(mylat,mylon,myvar,lat0=30,figure=myfig,ltitle='%d' %(i+1),
-                        nrows=nrows, ncols=ncols,mapid=i+1)
+                        nrows=nrows, ncols=ncols,mapid=i+1, draw=False)
 
 myfig.savefig('panel_4x3.png')
 ```
