@@ -241,11 +241,11 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             figure=plt.figure(figsize=figsize)
         ax = plt.subplot(nrows,ncols,mapid)
 
-        if vmin==0 or vmax==0 or inc==0:
+        if vmin==0 and vmax==0 and inc==0:
             vmin, vmax, inc =getRange(var,vmin,vmax,inc)
 
-        var2=np.where(var>vmax,vmax-inc,var)
-        var3=np.where(var2<vmin,vmin+inc,var2)
+        var[var>=vmax]=vmax-0.01*inc
+        var[var<=vmin]=vmin+0.01*inc
 
         if show0==1:
             ncolors=np.shape(np.arange(vmin,vmax,inc))[0]
@@ -261,7 +261,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
 
         if lat0==False:
             lat0=min(lat)
-        var_c, lon_c = addcyclic(var3, lon)
+        var_c, lon_c = addcyclic(var, lon)
         var_c=var_c[np.where(lat>=lat0)[0],:]
         lat=lat[np.where(lat>=lat0)[0]]
 
