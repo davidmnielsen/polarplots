@@ -167,14 +167,14 @@ def drawbox(boxlat,boxlon,m,boxcol,boxlw,boxls):
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               resolution='c',figsize=(8,8),commonbar=None,
-              nrows=1,ncols=1,mapid=1,draw=True,
+              nrows=1,ncols=1,mapid=1,draw=True,block=True,
               drawMeridians=True, drawParallels=True,meridFontsize=6,
               boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
               boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
               boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2, boxls3='-',
               boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2, boxls4='-',
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
-              figure=False, autoformat=True,
+              figure=False, autoformat=True, returnxy=False,
               ts=False,tsx=False,tsy=False):
     
     if ts==False:
@@ -320,7 +320,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax, orientation='horizontal',drawedges=False)
             mycb.ax.tick_params(labelsize=cbfontsize)
         if draw:
-            plt.show()
+            plt.show(block=block)
     
     else:
         import numpy as np
@@ -336,7 +336,10 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         ax.xaxis.set_ticks_position('bottom')        
         if draw:
             plt.show()
-        
-    return figure
+    
+    if returnxy:
+        return figure, x, y, lon_c
+    else:    
+        return figure
 
 
