@@ -164,6 +164,11 @@ def drawbox(boxlat,boxlon,m,boxcol,boxlw,boxls):
         m.plot(xs,ys, lw=boxlw, ls=boxls, color=boxcol)
     return
 
+def addcyc(var,lon):
+    from mpl_toolkits.basemap import addcyclic
+    var_c, lon_c = addcyclic(var, lon)
+    return var_c, lon_c
+
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               resolution='c',figsize=(8,8),commonbar=None,
@@ -289,7 +294,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
 
         if lat0==False:
             lat0=min(lat)
-        var_c, lon_c = addcyclic(var, lon)
+        
+        var_c, lon_c = addcyc(var, lon)
         var_c=var_c[np.where(lat>=lat0)[0],:]
         lat=lat[np.where(lat>=lat0)[0]]
 
