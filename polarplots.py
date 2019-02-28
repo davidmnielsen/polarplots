@@ -173,7 +173,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               resolution='c',figsize=(8,8),commonbar=None,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,
-              drawMeridians=True, drawParallels=True,meridFontsize=5,
+              drawMeridians=True, drawParallels=True,meridFontsize=7,
               boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
               boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
               boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2, boxls3='-',
@@ -230,16 +230,20 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                     commonbar='h'
                     bottom=0.15
                     cbarcoords=[0.15, 0.1, 0.7, 0.04]
-            elif (nrows==1 and ncols==2):
-                figsize=(10,6)
-                meridFontsize=7
+            elif (nrows==1 and ncols==2):              ############### here
+                meridFontsize=6
                 cbfontsize=8
                 colorbar=0
                 if mapid==1:
-                    commonbar='h'
-                    bottom=0.15
-                    cbarcoords=[0.15, 0.15
-                                , 0.7, 0.04]
+                    if commonbar=='v':
+                        figsize=(8.5,3.8)
+                        bottom=0.0
+                        cbarcoords=[0.85, 0.13, 0.02, 0.74]
+                    else:
+                        commonbar='h'
+                        figsize=(9,5)
+                        bottom=0.18
+                        cbarcoords=[0.15, 0.09, 0.7, 0.04]
             elif (nrows==3 and ncols==1):
                 figsize=(5,12)
                 meridFontsize=7
@@ -256,7 +260,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                 colorbar=0
                 if mapid==1:
                     if commonbar=='v':
-                        cbarcoords=[0.82, 0.22, 0.04, 0.56] ############### here
+                        cbarcoords=[0.82, 0.22, 0.04, 0.56] 
                     else:
                         commonbar='h'
                         bottom=0.12
