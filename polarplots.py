@@ -255,9 +255,12 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                 cbfontsize=6
                 colorbar=0
                 if mapid==1:
-                    commonbar='h'
-                    bottom=0.1
-                    cbarcoords=[0.15, 0.055, 0.7, 0.02]
+                    if commonbar=='v':
+                        cbarcoords=[0.82, 0.22, 0.04, 0.56] ############### here
+                    else:
+                        commonbar='h'
+                        bottom=0.12
+                        cbarcoords=[0.12, 0.055, 0.78, 0.02]
             else:
                 if ((nrows!=1 or ncols!=1) and mapid==1):
                     if commonbar=='h':
