@@ -170,7 +170,7 @@ def addcyc(var,lon):
     return var_c, lon_c
 
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
-              zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
+              zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,titfontsize=10,
               resolution='c',figsize=(8,8),commonbar=None,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,
               drawMeridians=True, drawParallels=True,meridFontsize=7,
@@ -230,15 +230,15 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                     commonbar='h'
                     bottom=0.15
                     cbarcoords=[0.15, 0.1, 0.7, 0.04]
-            elif (nrows==1 and ncols==2):              ############### here
+            elif (nrows==1 and ncols==2):              
                 meridFontsize=6
                 cbfontsize=8
                 colorbar=0
                 if mapid==1:
                     if commonbar=='v':
-                        figsize=(9,4.5)
-                        bottom=0.12
-                        cbarcoords=[0.85, 0.15, 0.02, 0.7]
+                        figsize=(8.5,3.8)
+                        bottom=0.0
+                        cbarcoords=[0.85, 0.13, 0.02, 0.74]
                     else:
                         commonbar='h'
                         figsize=(9,5)
@@ -253,18 +253,19 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                     commonbar='h'
                     bottom=0.1
                     cbarcoords=[0.15, 0.05, 0.7, 0.02]
-            elif (nrows==2 and ncols==1):
-                figsize=(4,6.2)
+            elif (nrows==2 and ncols==1): ############### here
                 meridFontsize=6
                 cbfontsize=6
                 colorbar=0
                 if mapid==1:
                     if commonbar=='v':
-                        cbarcoords=[0.82, 0.22, 0.04, 0.56] 
+                        figsize=(4.2,6.7)
+                        cbarcoords=[0.84, 0.22, 0.04, 0.56] 
                     else:
+                        figsize=(4,6.7)
                         commonbar='h'
-                        bottom=0.12
-                        cbarcoords=[0.12, 0.055, 0.78, 0.02]
+                        bottom=0.10
+                        cbarcoords=[0.1, 0.055, 0.82, 0.02]
             else:
                 if ((nrows!=1 or ncols!=1) and mapid==1):
                     if commonbar=='h':
@@ -338,7 +339,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5,boxls5)
 
         if colorbar==1:
-            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False)
+            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False,fontsite=cbfontsize)
             cb.ax.tick_params(labelsize=cbfontsize)
         if zeroline==1:
             m2=plt.contour(x,y,var_c,levels=[0],colors='k')
@@ -347,8 +348,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             draw_round_frame(m)
         if contours==1:
             plt.contour(x,y,var_c,levels=levels,colors='k',linewidths=0.5)
-        plt.title(rtitle,loc='right')
-        plt.title(ltitle,loc='left')
+        plt.title(rtitle,loc='right',fontsize=titfontsize)
+        plt.title(ltitle,loc='left',fontsize=titfontsize)
 
         if commonbar=='v':
             figure.subplots_adjust(right=0.8,left=0.05,top=0.95,bottom=0.05)
