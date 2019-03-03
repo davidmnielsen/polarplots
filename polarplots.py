@@ -212,6 +212,34 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
             m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=0.30)
         if drawParallels==True:
             m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=0.3)
+    
+    # Laptev + a bit of Kara and East Siberian Seas
+    elif projection=='laptev_extended':
+        llcrnrlon=70
+        urcrnrlon=190
+        llcrnrlat=65
+        urcrnrlat=85
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+                    resolution=resolution,projection='lcc',
+                    lat_ts=50,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=0.30)
+        if drawParallels==True:
+            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=0.3)
+    
+    # Laptev + East Siberian Seas       
+    elif projection=='laptev_east':
+        llcrnrlon=95
+        urcrnrlon=199
+        llcrnrlat=65
+        urcrnrlat=81
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+                    resolution='l',projection='lcc',rsphere=(6378137.00,6356752.3142),
+                    lat_ts=50,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=0.30)
+        if drawParallels==True:
+            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=0.3)
             
     m.drawcoastlines(linewidth=0.3)
     x, y = m(*np.meshgrid(lon_c,lat))
@@ -219,7 +247,7 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
 
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,titfontsize=10,
-              resolution='c',figsize=(8,8),commonbar=None,projection='polar',
+              resolution='c',figsize=(8,8),commonbar=None,projection='polar',fillcont=False,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,interp=True,
               drawMeridians=True, drawParallels=True,meridFontsize=7,
               boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
@@ -228,7 +256,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2, boxls4='-',
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
-              ts=False,tsx=False,tsy=False):
+              ts=False,tsx=False,tsy=False,
+              u=False,v=False,skipx=1,skipy=1,scale=1):
     
     if ts==False:
         # Format set-ups:
@@ -354,10 +383,10 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         var_c, lon_c = addcyc(var, lon)
         #print(np.shape(mynans))
         var_c=var_c[np.where(lat>=lat0)[0],:]
-        lat=lat[np.where(lat>=lat0)[0]]
+        latnew=lat[np.where(lat>=lat0)[0]]
         
         # Get Projection Right
-        m, x, y = getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize)
+        m, x, y = getBasemap(projection,lat0,resolution,lon_c,latnew,drawMeridians,drawParallels,meridFontsize)
         
         # Actuallz draw stuff
         cbar, cblevels = getCbar(levels,show0,cmap,ncolors)
@@ -368,6 +397,29 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             norm = BoundaryNorm(levels, ncolors=cbar.N, clip=False)
             masked = np.ma.masked_where(np.isnan(var_c),var_c)
             img=m.pcolormesh(x,y,masked,cmap=cbar,norm=norm,snap=False)
+            
+        if fillcont:
+            m.fillcontinents(color='lightgrey',zorder=0)
+            
+        # Draw vector
+        if u is not bool:
+            ur , vr, xvec, yvec =m.rotate_vector(u, v, lon, lat, returnxy=True)
+            print(np.shape(xvec))
+            uc, _ = pp.addcyc(ur,lon)
+            vc, _ = pp.addcyc(vr,lon)
+            stepx=skipx
+            syepy=skipy
+            vectors = m.quiver(xvec[::stepy,::stepx], yvec[::stepy,::stepx],
+                               uc[::stepy,::stepx], vc[::stepy,::stepx],
+                               headwidth=6,headlength=6,headaxislength=4,
+                               latlon=False,scale=scale,zorder=5)
+            vecmag=round((np.mean(np.mean(uc[::stepy,::stepx]))**2)+
+                         (np.mean(np.mean(vc[::stepy,::stepx]))**2)**(0.5))
+            if vecmag==0:
+                vecmag=1
+            plt.quiverkey(vectors, 1.05, 1, vecmag,
+              r'$%d \frac{m}{s}$' %vecmag, coordinates='axes',labelsep=0.05,
+               fontproperties={'size': 14})
 
         # Draw Box (or Lines)
         if boxlat!=False:
@@ -383,7 +435,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         
         # Bunch of optional stuff
         if colorbar==1:
-            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False,fontsite=cbfontsize)
+            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False)
             cb.ax.tick_params(labelsize=cbfontsize)
         if zeroline==1:
             m2=plt.contour(x,y,var_c,levels=[0],colors='k')

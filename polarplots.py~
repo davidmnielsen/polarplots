@@ -169,10 +169,58 @@ def addcyc(var,lon):
     var_c, lon_c = addcyclic(var, lon)
     return var_c, lon_c
 
+def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize):
+    from mpl_toolkits.basemap import Basemap
+    import numpy as np
+    
+    # Polar Sereographic Projection
+    if projection=='polar':
+        if hemisphere=='N' or hemisphere=='n':
+            proj='npstere'
+        elif hemisphere=='S' or hemisphere=='s':
+            proj='spstere'
+        else:
+            print('Invalid hemisphere: should be "N" or "S" for projection="polar".')
+        m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=meridFontsize)
+        if drawParallels==True:
+            m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
+            
+    # Laptev Projection (Lambert Azimuthal)
+    elif projection=='laptev_lamb':
+        llcrnrlon=90
+        urcrnrlon=180
+        llcrnrlat=67
+        urcrnrlat=75
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+            resolution=resolution,projection='laea',lat_ts=80,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=0.30)
+        if drawParallels==True:
+            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=0.3)
+    
+    # Laptev in Cassini Projection      
+    elif projection=='laptev_cass':
+        llcrnrlon=90
+        urcrnrlon=170
+        llcrnrlat=73
+        urcrnrlat=71
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+            resolution=resolution,projection='cass',lon_0=urcrnrlon-llcrnrlon,lat_0=urcrnrlat-llcrnrlat)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=0.30)
+        if drawParallels==True:
+            m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=0.3)
+            
+    m.drawcoastlines(linewidth=0.3)
+    x, y = m(*np.meshgrid(lon_c,lat))
+    return m, x, y
+
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,titfontsize=10,
-              resolution='c',figsize=(8,8),commonbar=None,
-              nrows=1,ncols=1,mapid=1,draw=True,block=True,
+              resolution='c',figsize=(8,8),commonbar=None,projection='polar',
+              nrows=1,ncols=1,mapid=1,draw=True,block=True,interp=True,
               drawMeridians=True, drawParallels=True,meridFontsize=7,
               boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
               boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
@@ -304,29 +352,24 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             lat0=min(lat)
         
         var_c, lon_c = addcyc(var, lon)
+        #print(np.shape(mynans))
         var_c=var_c[np.where(lat>=lat0)[0],:]
         lat=lat[np.where(lat>=lat0)[0]]
-
-        if hemisphere=='N' or hemisphere=='n':
-            proj='npstere'
-        elif hemisphere=='S' or hemisphere=='s':
-            proj='spstere'
-        else:
-            print('Invalid hemisphere: should be "N" or "S".')
-            return figure
-
-        m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
-        x, y = m(*np.meshgrid(lon_c,lat))
-
+        
+        # Get Projection Right
+        m, x, y = getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize)
+        
+        # Actuallz draw stuff
         cbar, cblevels = getCbar(levels,show0,cmap,ncolors)
+        if interp:
+            img=m.contourf(x,y,var_c,levels=levels,cmap=cbar)
+        else:
+            from matplotlib.colors import BoundaryNorm
+            norm = BoundaryNorm(levels, ncolors=cbar.N, clip=False)
+            masked = np.ma.masked_where(np.isnan(var_c),var_c)
+            img=m.pcolormesh(x,y,masked,cmap=cbar,norm=norm,snap=False)
 
-        img=m.contourf(x,y,var_c,levels=levels,cmap=cbar)
-        m.drawcoastlines(linewidth=0.3)
-        if drawMeridians==True:
-            m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=meridFontsize)
-        if drawParallels==True:
-            m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
-
+        # Draw Box (or Lines)
         if boxlat!=False:
             drawbox(boxlat,boxlon,m,boxcol,boxlw,boxls)
         if boxlat2!=False:
@@ -337,17 +380,18 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             drawbox(boxlat4,boxlon4,m,boxcol4,boxlw4,boxls4)
         if boxlat5!=False:
             drawbox(boxlat5,boxlon5,m,boxcol5,boxlw5,boxls5)
-
+        
+        # Bunch of optional stuff
         if colorbar==1:
             cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False,fontsite=cbfontsize)
             cb.ax.tick_params(labelsize=cbfontsize)
         if zeroline==1:
             m2=plt.contour(x,y,var_c,levels=[0],colors='k')
             plt.clabel(m2, m2.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
-        if frame==1:
-            draw_round_frame(m)
         if contours==1:
             plt.contour(x,y,var_c,levels=levels,colors='k',linewidths=0.5)
+        if frame==1:
+            draw_round_frame(m)
         plt.title(rtitle,loc='right',fontsize=titfontsize)
         plt.title(ltitle,loc='left',fontsize=titfontsize)
 
