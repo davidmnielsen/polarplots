@@ -169,7 +169,7 @@ def addcyc(var,lon):
     var_c, lon_c = addcyclic(var, lon)
     return var_c, lon_c
 
-def getBasemap(projection,lat0,resolution,lon_c,lat,hemisphere,drawMeridians,drawParallels,meridFontsize,coastlw,meridlw):
+def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize,coastlw,meridlw,hemisphere):
     from mpl_toolkits.basemap import Basemap
     import numpy as np
     
@@ -240,6 +240,10 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,hemisphere,drawMeridians,dra
             m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=meridlw)
         if drawParallels==True:
             m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=meridlw)
+            
+    else:
+        print('ERROR: Invalid projection. Options available:')
+        print('polar, laptev_extended, laptev_east, laptev_cass, laptev_lamb')
             
     m.drawcoastlines(linewidth=coastlw)
     x, y = m(*np.meshgrid(lon_c,lat))
@@ -400,7 +404,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             img=m.pcolormesh(x,y,masked,cmap=cbar,norm=norm,snap=False)
             
         # Draw vector
-        if u is not bool:
+        if type(u)!=bool:
             ur , vr, xvec, yvec =m.rotate_vector(u, v, lon, lat, returnxy=True)
             uc, _ = addcyc(ur,lon)
             vc, _ = addcyc(vr,lon)
