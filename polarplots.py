@@ -169,7 +169,7 @@ def addcyc(var,lon):
     var_c, lon_c = addcyclic(var, lon)
     return var_c, lon_c
 
-def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize):
+def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize,coastlw,meridlw):
     from mpl_toolkits.basemap import Basemap
     import numpy as np
     
@@ -183,9 +183,9 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
             print('Invalid hemisphere: should be "N" or "S" for projection="polar".')
         m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=0.30, fontsize=meridFontsize)
+            m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=meridlw, fontsize=meridFontsize)
         if drawParallels==True:
-            m.drawparallels(np.arange(-90, 91, 45),linewidth=0.3)
+            m.drawparallels(np.arange(-90, 91, 45),linewidth=meridlw)
             
     # Laptev Projection (Lambert Azimuthal)
     elif projection=='laptev_lamb':
@@ -196,9 +196,9 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
         m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
             resolution=resolution,projection='laea',lat_ts=80,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=0.30)
+            m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=meridlw)
         if drawParallels==True:
-            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=0.3)
+            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=meridlw)
     
     # Laptev in Cassini Projection      
     elif projection=='laptev_cass':
@@ -209,9 +209,9 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
         m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
             resolution=resolution,projection='cass',lon_0=urcrnrlon-llcrnrlon,lat_0=urcrnrlat-llcrnrlat)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=0.30)
+            m.drawmeridians(np.arange(90, urcrnrlon, 20), labels=[0,1,0,1],linewidth=meridlw)
         if drawParallels==True:
-            m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=0.3)
+            m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=meridlw)
     
     # Laptev + a bit of Kara and East Siberian Seas
     elif projection=='laptev_extended':
@@ -223,9 +223,9 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
                     resolution=resolution,projection='lcc',
                     lat_ts=50,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=0.30)
+            m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=meridlw)
         if drawParallels==True:
-            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=0.3)
+            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=meridlw)
     
     # Laptev + East Siberian Seas       
     elif projection=='laptev_east':
@@ -237,11 +237,11 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
                     resolution='l',projection='lcc',rsphere=(6378137.00,6356752.3142),
                     lat_ts=50,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=0.30)
+            m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=meridlw)
         if drawParallels==True:
-            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=0.3)
+            m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=meridlw)
             
-    m.drawcoastlines(linewidth=0.3)
+    m.drawcoastlines(linewidth=coastlw)
     x, y = m(*np.meshgrid(lon_c,lat))
     return m, x, y
 
@@ -249,7 +249,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,titfontsize=10,
               resolution='c',figsize=(8,8),commonbar=None,projection='polar',fillcont=False,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,interp=True,
-              drawMeridians=True, drawParallels=True,meridFontsize=7,
+              drawMeridians=True, drawParallels=True,meridFontsize=7,coastlw=0.3,meridlw=0.3,
               boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
               boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
               boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2, boxls3='-',
@@ -257,7 +257,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1):
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True):
     
     if ts==False:
         # Format set-ups:
@@ -386,7 +386,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         latnew=lat[np.where(lat>=lat0)[0]]
         
         # Get Projection Right
-        m, x, y = getBasemap(projection,lat0,resolution,lon_c,latnew,drawMeridians,drawParallels,meridFontsize)
+        m, x, y = getBasemap(projection,lat0,resolution,lon_c,latnew,drawMeridians,drawParallels,
+                             meridFontsize,coastlw,meridlw)
         
         # Actuallz draw stuff
         cbar, cblevels = getCbar(levels,show0,cmap,ncolors)
@@ -398,28 +399,25 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             masked = np.ma.masked_where(np.isnan(var_c),var_c)
             img=m.pcolormesh(x,y,masked,cmap=cbar,norm=norm,snap=False)
             
-        if fillcont:
-            m.fillcontinents(color='lightgrey',zorder=0)
-            
         # Draw vector
         if u is not bool:
             ur , vr, xvec, yvec =m.rotate_vector(u, v, lon, lat, returnxy=True)
-            print(np.shape(xvec))
-            uc, _ = pp.addcyc(ur,lon)
-            vc, _ = pp.addcyc(vr,lon)
+            uc, _ = addcyc(ur,lon)
+            vc, _ = addcyc(vr,lon)
             stepx=skipx
-            syepy=skipy
+            stepy=skipy
             vectors = m.quiver(xvec[::stepy,::stepx], yvec[::stepy,::stepx],
                                uc[::stepy,::stepx], vc[::stepy,::stepx],
                                headwidth=6,headlength=6,headaxislength=4,
                                latlon=False,scale=scale,zorder=5)
-            vecmag=round((np.mean(np.mean(uc[::stepy,::stepx]))**2)+
-                         (np.mean(np.mean(vc[::stepy,::stepx]))**2)**(0.5))
-            if vecmag==0:
-                vecmag=1
-            plt.quiverkey(vectors, 1.05, 1, vecmag,
-              r'$%d \frac{m}{s}$' %vecmag, coordinates='axes',labelsep=0.05,
-               fontproperties={'size': 14})
+            if drawVecLabel:
+                vecmag=round((np.mean(np.mean(uc[::stepy,::stepx]))**2)+
+                             (np.mean(np.mean(vc[::stepy,::stepx]))**2)**(0.5))
+                if vecmag==0:
+                    vecmag=1
+                plt.quiverkey(vectors, 1.05, 1, vecmag,
+                  r'$%d \frac{m}{s}$' %vecmag, coordinates='axes',labelsep=0.05,
+                   fontproperties={'size': 14})
 
         # Draw Box (or Lines)
         if boxlat!=False:
@@ -444,6 +442,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             plt.contour(x,y,var_c,levels=levels,colors='k',linewidths=0.5)
         if frame==1:
             draw_round_frame(m)
+        if fillcont:
+            m.fillcontinents(color='lightgrey',zorder=0)
         plt.title(rtitle,loc='right',fontsize=titfontsize)
         plt.title(ltitle,loc='left',fontsize=titfontsize)
 
