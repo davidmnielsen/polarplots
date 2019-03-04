@@ -169,7 +169,7 @@ def addcyc(var,lon):
     var_c, lon_c = addcyclic(var, lon)
     return var_c, lon_c
 
-def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,meridFontsize,coastlw,meridlw):
+def getBasemap(projection,lat0,resolution,lon_c,lat,hemisphere,drawMeridians,drawParallels,meridFontsize,coastlw,meridlw):
     from mpl_toolkits.basemap import Basemap
     import numpy as np
     
@@ -387,7 +387,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         
         # Get Projection Right
         m, x, y = getBasemap(projection,lat0,resolution,lon_c,latnew,drawMeridians,drawParallels,
-                             meridFontsize,coastlw,meridlw)
+                             meridFontsize,coastlw,meridlw,hemisphere)
         
         # Actuallz draw stuff
         cbar, cblevels = getCbar(levels,show0,cmap,ncolors)
