@@ -234,13 +234,27 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
         llcrnrlat=65
         urcrnrlat=81
         m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
-                    resolution='l',projection='lcc',rsphere=(6378137.00,6356752.3142),
+                    resolution=resolution,projection='lcc',rsphere=(6378137.00,6356752.3142),
                     lat_ts=50,lat_0=urcrnrlat-llcrnrlat,lon_0=urcrnrlon-llcrnrlon)
         if drawMeridians==True:
             m.drawmeridians(np.arange(llcrnrlon, urcrnrlon, 30), labels=[0,0,0,1],linewidth=meridlw)
         if drawParallels==True:
             m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=meridlw)
-            
+    
+    # The best one
+    elif projection=='laptev_cass2':
+        llcrnrlon=90
+        urcrnrlon=170
+        llcrnrlat=70
+        urcrnrlat=77
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+                    resolution=resolution,projection='cass',lon_0=100,lat_0=80)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(100, urcrnrlon, 20), labels=[0,1,0,1],linewidth=meridlw)
+        if drawParallels==True:
+            m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=meridlw)
+    
+    # No proper projection given    
     else:
         print('ERROR: Invalid projection. Options available:')
         print('polar, laptev_extended, laptev_east, laptev_cass, laptev_lamb')
