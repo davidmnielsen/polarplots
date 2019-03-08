@@ -214,7 +214,7 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
             m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=meridlw)
     
     # Laptev + a bit of Kara and East Siberian Seas
-    elif projection=='laptev_extended':
+    elif projection=='laptev_extended_lamb':
         llcrnrlon=70
         urcrnrlon=190
         llcrnrlat=65
@@ -241,23 +241,36 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
         if drawParallels==True:
             m.drawparallels(np.arange(60, urcrnrlat+10, 10),labels=[1,0,0,0],linewidth=meridlw)
     
-    # The best one
-    elif projection=='laptev_cass2':
-        llcrnrlon=90
-        urcrnrlon=170
-        llcrnrlat=70
+    # Simply Laptev
+    elif projection=='laptev':
+        llcrnrlon=97.5
+        urcrnrlon=180
+        llcrnrlat=67
+        urcrnrlat=80
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+                    resolution=resolution,projection='cass',lon_0=120,lat_0=20)
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(80, urcrnrlon, 20), labels=[0,0,0,1],linewidth=meridlw)
+        if drawParallels==True:
+            m.drawparallels(np.arange(60, 90, 10),labels=[1,0,0,0],linewidth=meridlw)     
+            
+    # Laptev with Zoom out
+    elif projection=='laptev_extended':
+        llcrnrlon=92.7
+        urcrnrlon=197
+        llcrnrlat=61
         urcrnrlat=77
         m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
-                    resolution=resolution,projection='cass',lon_0=100,lat_0=80)
+                    resolution=resolution,projection='cass',lon_0=120,lat_0=20, lat_ts=86)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(100, urcrnrlon, 20), labels=[0,1,0,1],linewidth=meridlw)
+            m.drawmeridians(np.arange(60, urcrnrlon, 20), labels=[0,0   ,0,1],linewidth=meridlw)
         if drawParallels==True:
-            m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,1,0,0],linewidth=meridlw)
+            m.drawparallels(np.arange(60, urcrnrlat+20, 10),labels=[1,0,0,0],linewidth=meridlw)
     
     # No proper projection given    
     else:
         print('ERROR: Invalid projection. Options available:')
-        print('polar, laptev_extended, laptev_east, laptev_cass, laptev_lamb')
+        print('polar, laptev, laptev_extended, laptev_lamb, laptev_extended_lamb, laptev_east, laptev_cass')
             
     m.drawcoastlines(linewidth=coastlw)
     x, y = m(*np.meshgrid(lon_c,lat))
@@ -275,7 +288,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True):
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,
+              gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
     
     if ts==False:
         # Format set-ups:
@@ -464,7 +478,20 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             m.fillcontinents(color='lightgrey',zorder=0)
         plt.title(rtitle,loc='right',fontsize=titfontsize)
         plt.title(ltitle,loc='left',fontsize=titfontsize)
-
+        
+        # Draw secondary contour plot
+        if type(gxoutc)!=bool:
+            gxc, _ = addcyc(gxoutc, lon)
+            gxc=gxc[np.where(lat>=lat0)[0],:]
+            if gxoutclevs==False:
+                cmin, cmax, cinc =getRange(gxc,0,0,0)
+                gxc[gxc>=cmax]=cmax-0.01*cinc
+                gxc[gxc<=cmin]=cmin+0.01*cinc
+                gxoutclevs=np.arange(cmin,cmax+cinc,cinc)
+            m3=plt.contour(x,y,gxc,levels=gxoutclevs,colors=gxoutccol,linewidths=gxoutclw,linestyles=gxoutcls)
+            if gxoutclabel:
+                plt.clabel(m3, m3.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
+        
         if commonbar=='v':
             figure.subplots_adjust(right=0.8,left=0.05,top=0.95,bottom=0.05)
             cbar_ax = figure.add_axes(cbarcoords)
