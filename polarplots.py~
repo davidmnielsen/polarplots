@@ -281,14 +281,14 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               resolution='c',figsize=(8,8),commonbar=None,projection='polar',fillcont=False,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,interp=True,
               drawMeridians=True, drawParallels=True,meridFontsize=7,coastlw=0.3,meridlw=0.3,
-              boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
+              boxlat=False,  boxlon=False,  boxcol='k',  boxlw=2,  boxls='-',
               boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
               boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2, boxls3='-',
               boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2, boxls4='-',
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
     
     if ts==False:
@@ -433,22 +433,41 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             
         # Draw vector
         if type(u)!=bool:
+            nxv = nxv 
+            nyv = nyv
+            uc, _ = addcyc(u,lon)
+            vc, _ = addcyc(v,lon)
+            # longitudes must monotonically increase from -180 to 180
+            # latitudes must be in ascending order
+            pos180=int(np.where(lon-180==0)[0])
+            udat, vdat, xvec, yvec = m.transform_vector(np.hstack([uc[::-1,pos180+1:],uc[::-1,:pos180+1]]),
+                                                        np.hstack([vc[::-1,pos180+1:],vc[::-1,:pos180+1]]),
+                                                        lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
+            vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
+                               udat[::skipy, ::skipx], vdat[::skipy, ::skipx],
+                               headwidth=4,headlength=4,headaxislength=4,
+                               scale=scale,zorder=5) #or specify, e.g., width=0.003, scale=400)
+            '''
+            This is in lat/lon, not in projection coordinates.
+            See /basemap/examples/quiver_demo.py
             ur , vr, xvec, yvec =m.rotate_vector(u, v, lon, lat, returnxy=True)
             uc, _ = addcyc(ur,lon)
             vc, _ = addcyc(vr,lon)
-            stepx=skipx
-            stepy=skipy
-            vectors = m.quiver(xvec[::stepy,::stepx], yvec[::stepy,::stepx],
-                               uc[::stepy,::stepx], vc[::stepy,::stepx],
+            vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
+                               uc[::skipy, ::skipx], vc[::skipy, ::skipx],
                                headwidth=6,headlength=6,headaxislength=4,
                                latlon=False,scale=scale,zorder=5)
+            '''
             if drawVecLabel:
-                vecmag=round((np.mean(np.mean(uc[::stepy,::stepx]))**2)+
-                             (np.mean(np.mean(vc[::stepy,::stepx]))**2)**(0.5))
-                if vecmag==0:
+                vmean=((np.mean(np.mean(uc[::skipy,::skipx]))**2)+
+                       (np.mean(np.mean(vc[::skipy,::skipx]))**2))**(0.5)
+                vecmag=vmean+0.5*vmean
+                print(vecmag)
+                print(round(vecmag))
+                if vecmag<1:
                     vecmag=1
-                plt.quiverkey(vectors, 1.05, 1, vecmag,
-                  r'$%d \frac{m}{s}$' %vecmag, coordinates='axes',labelsep=0.05,
+                plt.quiverkey(vectors, 1.05, 1, round(vecmag),
+                  r'%d m/s' %vecmag, coordinates='axes',labelsep=0.05,
                    fontproperties={'size': 14})
 
         # Draw Box (or Lines)

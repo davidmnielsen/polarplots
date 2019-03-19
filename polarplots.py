@@ -281,14 +281,14 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               resolution='c',figsize=(8,8),commonbar=None,projection='polar',fillcont=False,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,interp=True,
               drawMeridians=True, drawParallels=True,meridFontsize=7,coastlw=0.3,meridlw=0.3,
-              boxlat=False, boxlon=False, boxcol='k', boxlw=2, boxls='-',
+              boxlat=False,  boxlon=False,  boxcol='k',  boxlw=2,  boxls='-',
               boxlat2=False, boxlon2=False, boxcol2='k', boxlw2=2, boxls2='-',
               boxlat3=False, boxlon3=False, boxcol3='k', boxlw3=2, boxls3='-',
               boxlat4=False, boxlon4=False, boxcol4='k', boxlw4=2, boxls4='-',
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
     
     if ts==False:
@@ -433,13 +433,16 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             
         # Draw vector
         if type(u)!=bool:
-            nxv = 50; nyv = 50
-            #nxp = 2*nxv; nyp = 2*nyv
-            #spd = np.sqrt(u**2+v**2)
+            nxv = nxv 
+            nyv = nyv
             uc, _ = addcyc(u,lon)
             vc, _ = addcyc(v,lon)
-            udat, vdat, xvec, yvec = m.transform_vector(uc,vc,lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
-            #pdat, xp, yp = m.transform_scalar(p,lons1,lats1,nxp,nyp,returnxy=True)
+            # longitudes must monotonically increase from -180 to 180
+            # latitudes must be in ascending order
+            pos180=int(np.where(lon-180==0)[0])
+            udat, vdat, xvec, yvec = m.transform_vector(np.hstack([uc[::-1,pos180+1:],uc[::-1,:pos180+1]]),
+                                                        np.hstack([vc[::-1,pos180+1:],vc[::-1,:pos180+1]]),
+                                                        lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
             vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
                                udat[::skipy, ::skipx], vdat[::skipy, ::skipx],
                                headwidth=4,headlength=4,headaxislength=4,
