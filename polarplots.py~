@@ -288,7 +288,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,vecunit='m/s',vwidth=4,vlength=4,vaxislength=1,
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
     
     if ts==False:
@@ -445,8 +445,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                                                         lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
             vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
                                udat[::skipy, ::skipx], vdat[::skipy, ::skipx],
-                               headwidth=4,headlength=4,headaxislength=4,
-                               scale=scale,zorder=5) #or specify, e.g., width=0.003, scale=400)
+                               headwidth=vwidth,headlength=vlength,headaxislength=vaxislength,
+                               scale=scale,zorder=5)
             '''
             This is in lat/lon, not in projection coordinates.
             See /basemap/examples/quiver_demo.py
@@ -462,13 +462,11 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                 vmean=((np.mean(np.mean(uc[::skipy,::skipx]))**2)+
                        (np.mean(np.mean(vc[::skipy,::skipx]))**2))**(0.5)
                 vecmag=vmean+0.5*vmean
-                print(vecmag)
-                print(round(vecmag))
                 if vecmag<1:
                     vecmag=1
-                plt.quiverkey(vectors, 1.05, 1, round(vecmag),
-                  r'%d m/s' %vecmag, coordinates='axes',labelsep=0.05,
-                   fontproperties={'size': 14})
+                plt.quiverkey(vectors, 1.05, -0.1, round(vecmag),
+                  r'%d %s' %(vecmag,vecunit), coordinates='axes',labelsep=0.05,
+                   fontproperties={'size': cbfontsize})
 
         # Draw Box (or Lines)
         if boxlat!=False:
