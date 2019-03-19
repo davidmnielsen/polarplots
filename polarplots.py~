@@ -288,7 +288,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True):
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,
+              gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
     
     if ts==False:
         # Format set-ups:
@@ -477,7 +478,20 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             m.fillcontinents(color='lightgrey',zorder=0)
         plt.title(rtitle,loc='right',fontsize=titfontsize)
         plt.title(ltitle,loc='left',fontsize=titfontsize)
-
+        
+        # Draw secondary contour plot
+        if type(gxoutc)!=bool:
+            gxc, _ = addcyc(gxoutc, lon)
+            gxc=gxc[np.where(lat>=lat0)[0],:]
+            if gxoutclevs==False:
+                cmin, cmax, cinc =getRange(gxc,0,0,0)
+                gxc[gxc>=cmax]=cmax-0.01*cinc
+                gxc[gxc<=cmin]=cmin+0.01*cinc
+                gxoutclevs=np.arange(cmin,cmax+cinc,cinc)
+            m3=plt.contour(x,y,gxc,levels=gxoutclevs,colors=gxoutccol,linewidths=gxoutclw,linestyles=gxoutcls)
+            if gxoutclabel:
+                plt.clabel(m3, m3.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
+        
         if commonbar=='v':
             figure.subplots_adjust(right=0.8,left=0.05,top=0.95,bottom=0.05)
             cbar_ax = figure.add_axes(cbarcoords)

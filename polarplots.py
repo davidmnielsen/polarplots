@@ -433,22 +433,38 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             
         # Draw vector
         if type(u)!=bool:
+            nxv = 50; nyv = 50
+            #nxp = 2*nxv; nyp = 2*nyv
+            #spd = np.sqrt(u**2+v**2)
+            uc, _ = addcyc(u,lon)
+            vc, _ = addcyc(v,lon)
+            udat, vdat, xvec, yvec = m.transform_vector(uc,vc,lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
+            #pdat, xp, yp = m.transform_scalar(p,lons1,lats1,nxp,nyp,returnxy=True)
+            vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
+                               udat[::skipy, ::skipx], vdat[::skipy, ::skipx],
+                               headwidth=4,headlength=4,headaxislength=4,
+                               scale=scale,zorder=5)
+            '''
+            This is in lat/lon, not in projection coordinates.
+            See /basemap/examples/quiver_demo.py
             ur , vr, xvec, yvec =m.rotate_vector(u, v, lon, lat, returnxy=True)
             uc, _ = addcyc(ur,lon)
             vc, _ = addcyc(vr,lon)
-            stepx=skipx
-            stepy=skipy
-            vectors = m.quiver(xvec[::stepy,::stepx], yvec[::stepy,::stepx],
-                               uc[::stepy,::stepx], vc[::stepy,::stepx],
+            vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
+                               uc[::skipy, ::skipx], vc[::skipy, ::skipx],
                                headwidth=6,headlength=6,headaxislength=4,
                                latlon=False,scale=scale,zorder=5)
+            '''
             if drawVecLabel:
-                vecmag=round((np.mean(np.mean(uc[::stepy,::stepx]))**2)+
-                             (np.mean(np.mean(vc[::stepy,::stepx]))**2)**(0.5))
-                if vecmag==0:
+                vmean=((np.mean(np.mean(uc[::skipy,::skipx]))**2)+
+                       (np.mean(np.mean(vc[::skipy,::skipx]))**2))**(0.5)
+                vecmag=vmean+0.5*vmean
+                print(vecmag)
+                print(round(vecmag))
+                if vecmag<1:
                     vecmag=1
-                plt.quiverkey(vectors, 1.05, 1, vecmag,
-                  r'$%d \frac{m}{s}$' %vecmag, coordinates='axes',labelsep=0.05,
+                plt.quiverkey(vectors, 1.05, 1, round(vecmag),
+                  r'%d m/s' %vecmag, coordinates='axes',labelsep=0.05,
                    fontproperties={'size': 14})
 
         # Draw Box (or Lines)
