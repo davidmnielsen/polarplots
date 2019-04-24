@@ -288,7 +288,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               boxlat5=False, boxlon5=False, boxcol5='k', boxlw5=2, boxls5='-',
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
-              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,vecunit='m/s',vwidth=4,vlength=4,vaxislength=1,
+              u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
     
     if ts==False:
@@ -464,7 +464,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                 vecmag=vmean+0.5*vmean
                 if vecmag<1:
                     vecmag=1
-                plt.quiverkey(vectors, 1.05, -0.1, round(vecmag),
+                plt.quiverkey(vectors,1.05,0.9, round(vecmag),
                   r'%d %s' %(vecmag,vecunit), coordinates='axes',labelsep=0.05,
                    fontproperties={'size': cbfontsize})
 
