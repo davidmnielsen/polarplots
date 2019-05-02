@@ -459,8 +459,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                                latlon=False,scale=scale,zorder=5)
             '''
             if drawVecLabel:
-                vmean=((np.mean(np.mean(uc[::skipy,::skipx]))**2)+
-                       (np.mean(np.mean(vc[::skipy,::skipx]))**2))**(0.5)
+                vmean=((np.nanmean(np.nanmean(uc[::skipy,::skipx]))**2)+
+                       (np.nanmean(np.nanmean(vc[::skipy,::skipx]))**2))**(0.5)
                 vecmag=vmean+0.5*vmean
                 if vecmag<1:
                     vecmag=1
