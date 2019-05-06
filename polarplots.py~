@@ -318,7 +318,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               ts=False,tsx=False,tsy=False,
               u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
               vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,
-              gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,gxoutcls=None):
+              gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1):
     
     if ts==False:
         # Format set-ups:
@@ -545,7 +545,15 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                 gxc[gxc>=cmax]=cmax-0.01*cinc
                 gxc[gxc<=cmin]=cmin+0.01*cinc
                 gxoutclevs=np.arange(cmin,cmax+cinc,cinc)
-            m3=plt.contour(x,y,gxc,levels=gxoutclevs,colors=gxoutccol,linewidths=gxoutclw,linestyles=gxoutcls)
+            import matplotlib
+            matplotlib.rcParams['contour.negative_linestyle'] = 'dashed'
+            
+            if gxoutccol=='bluered':
+                from matplotlib import colors
+                cmap = colors.ListedColormap(['blue', 'red'])
+                m3=plt.contour(x,y,gxc,levels=gxoutclevs,cmap=cmap,linewidths=gxoutclw)
+            else:
+                m3=plt.contour(x,y,gxc,levels=gxoutclevs,colors=gxoutccol,linewidths=gxoutclw)
             if gxoutclabel:
                 plt.clabel(m3, m3.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
         
