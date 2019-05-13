@@ -183,7 +183,7 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
             print('Invalid hemisphere: should be "N" or "S" for projection="polar".')
         m = Basemap(projection=proj,lat_0=90,lon_0=0,boundinglat=lat0,resolution=resolution,round=True)
         if drawMeridians==True:
-            m.drawmeridians(np.arange(0, 359, 45), labels=[1,1,0,0],linewidth=meridlw, fontsize=meridFontsize)
+            m.drawmeridians(np.arange(0, 359, 60), labels=[1,1,0,0],linewidth=meridlw, fontsize=meridFontsize)
         if drawParallels==True:
             m.drawparallels(np.arange(-90, 91, 45),linewidth=meridlw)
             
@@ -305,7 +305,7 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',
               clabel='',colorbar=1,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
-              titfontsize=10,
+              rtitfontsize=10, ltitfontsize=10,
               resolution='c',figsize=(8,8),commonbar=None,projection='polar',fillcont=False,
               nrows=1,ncols=1,mapid=1,draw=True,block=True,interp=True,
               drawMeridians=True, drawParallels=True,meridFontsize=7,coastlw=0.3,meridlw=0.3,
@@ -318,7 +318,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               ts=False,tsx=False,tsy=False,
               u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
               vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,
-              gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1):
+              gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,
+              gxoutclabelfmt='%0.f'):
     
     if ts==False:
         # Format set-ups:
@@ -369,14 +370,14 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                     bottom=0.15
                     cbarcoords=[0.15, 0.1, 0.7, 0.04]
             elif (nrows==1 and ncols==2):              
-                meridFontsize=6
-                cbfontsize=8
+                meridFontsize=10
+                cbfontsize=12
                 colorbar=0
                 if mapid==1:
                     if commonbar=='v':
-                        figsize=(8.5,3.8)
+                        figsize=(10,4.4)
                         bottom=0.0
-                        cbarcoords=[0.85, 0.13, 0.02, 0.74]
+                        cbarcoords=[0.85, 0.05, 0.02, 0.90]
                     else:
                         commonbar='h'
                         figsize=(9,5)
@@ -533,8 +534,8 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             draw_round_frame(m)
         if fillcont:
             m.fillcontinents(color='lightgrey',zorder=0)
-        plt.title(rtitle,loc='right',fontsize=titfontsize)
-        plt.title(ltitle,loc='left',fontsize=titfontsize)
+        plt.title(rtitle,loc='right',fontsize=rtitfontsize)
+        plt.title(ltitle,loc='left',fontsize=ltitfontsize)
         
         # Draw secondary contour plot
         if type(gxoutc)!=bool:
@@ -555,17 +556,19 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             else:
                 m3=plt.contour(x,y,gxc,levels=gxoutclevs,colors=gxoutccol,linewidths=gxoutclw)
             if gxoutclabel:
-                plt.clabel(m3, m3.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
+                plt.clabel(m3, m3.levels, inline=True, fontsize=cbfontsize, fmt=gxoutclabelfmt)
         
         if commonbar=='v':
             figure.subplots_adjust(right=0.8,left=0.05,top=0.95,bottom=0.05)
             cbar_ax = figure.add_axes(cbarcoords)
-            mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax,drawedges=False)
+            mycb=figure.colorbar(img,ticks=cblevels,cax=cbar_ax,drawedges=False)
+            mycb.set_label(label=clabel,size=cbfontsize)
             mycb.ax.tick_params(labelsize=cbfontsize)
         elif commonbar=='h':
             figure.subplots_adjust(bottom=bottom,top=0.95,left=0.05,right=0.95,hspace=0.1)
             cbar_ax = figure.add_axes(cbarcoords)
-            mycb=figure.colorbar(img,ticks=cblevels,label=clabel,cax=cbar_ax, orientation='horizontal',drawedges=False)
+            mycb=figure.colorbar(img,ticks=cblevels,cax=cbar_ax, orientation='horizontal',drawedges=False)
+            mycb.set_label(label=clabel,size=cbfontsize)
             mycb.ax.tick_params(labelsize=cbfontsize)
         if draw:
             plt.show(block=block)

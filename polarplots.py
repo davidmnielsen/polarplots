@@ -405,13 +405,16 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                         commonbar='h'
                         bottom=0.10
                         cbarcoords=[0.1, 0.055, 0.82, 0.02]
-            else:
-                if ((nrows!=1 or ncols!=1) and mapid==1):
+            elif ((nrows!=1 or ncols!=1) and mapid==1):
                     if commonbar=='h':
                         cbarcoords=[0.15, 0.05, 0.7, 0.02]
                         bottom=0.1
                     elif commonbar=='v':
                         cbarcoords=[0.85, 0.15, 0.02, 0.7]
+            else:
+                bottom=0.35
+                top=0.87
+                cbarcoords=[0.12, 0.27, 0.77, 0.022]
 
         import numpy as np
         from mpl_toolkits.basemap import Basemap, addcyclic
@@ -523,8 +526,9 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         
         # Bunch of optional stuff
         if colorbar==1 and commonbar==None:
-            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,label=clabel,drawedges=False)
+            cb=plt.colorbar(shrink=shrink,pad=0.1,ticks=cblevels,drawedges=False)
             cb.ax.tick_params(labelsize=cbfontsize)
+            cb.set_label(label=clabel,size=cbfontsize)
         if zeroline==1:
             m2=plt.contour(x,y,var_c,levels=[0],colors='k')
             plt.clabel(m2, m2.levels, inline=False, fontsize=cbfontsize, fmt='%.1f')
@@ -565,7 +569,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             mycb.set_label(label=clabel,size=cbfontsize)
             mycb.ax.tick_params(labelsize=cbfontsize)
         elif commonbar=='h':
-            figure.subplots_adjust(bottom=bottom,top=0.95,left=0.05,right=0.95,hspace=0.1)
+            figure.subplots_adjust(bottom=bottom,top=top,left=0.05,right=0.95,hspace=0.1)
             cbar_ax = figure.add_axes(cbarcoords)
             mycb=figure.colorbar(img,ticks=cblevels,cax=cbar_ax, orientation='horizontal',drawedges=False)
             mycb.set_label(label=clabel,size=cbfontsize)
@@ -599,3 +603,6 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         return figure, x, y
     else:    
         return figure
+
+
+
