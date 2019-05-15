@@ -317,9 +317,11 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
               u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
-              vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,
+              vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,vecmag=False,
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,
-              gxoutclabelfmt='%0.f'):
+              gxoutclabelfmt='%0.f',
+              mklat=False,mklon=False,markersymbol='o',markersize=10,
+              markerfacecolor='lime',markeredgecolor='lime'):
     
     from matplotlib import rc
     rc('text', usetex=usetex)
@@ -507,12 +509,13 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                                latlon=False,scale=scale,zorder=5)
             '''
             if drawVecLabel:
-                vmean=((np.nanmean(np.nanmean(uc[::skipy,::skipx]))**2)+
-                       (np.nanmean(np.nanmean(vc[::skipy,::skipx]))**2))**(0.5)
-                vecmag=vmean+0.5*vmean
-                if vecmag<1:
-                    vecmag=1
-                plt.quiverkey(vectors,1.05,0.9, round(vecmag),
+                if vecmag==False:
+                    vmean=((np.nanmean(np.nanmean(uc[::skipy,::skipx]))**2)+
+                           (np.nanmean(np.nanmean(vc[::skipy,::skipx]))**2))**(0.5)
+                    vecmag=vmean+0.5*vmean
+                    if vecmag<1:
+                        vecmag=1
+                plt.quiverkey(vectors,1.07,0.95, round(vecmag),
                   r'%d %s' %(vecmag,vecunit), coordinates='axes',labelsep=0.05,
                    fontproperties={'size': cbfontsize})
 
@@ -544,6 +547,10 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             m.fillcontinents(color='lightgrey',zorder=0)
         plt.title(rtitle,loc='right',fontsize=rtitfontsize)
         plt.title(ltitle,loc='left',fontsize=ltitfontsize)
+        if mklat!=bool and mklon!=bool:
+            mkx,mky = m(mklon, mklat)
+            m.plot(mkx, mky, markersymbol, markersize=markersize, 
+                   markerfacecolor=markerfacecolor, markeredgecolor=markeredgecolor)
         
         # Draw secondary contour plot
         if type(gxoutc)!=bool:

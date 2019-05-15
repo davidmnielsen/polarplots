@@ -303,7 +303,7 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
     return m, x, y
 
 def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame=0,rtitle='',ltitle='',
-              clabel='',colorbar=1,
+              clabel='',colorbar=1,usetex=True,
               zeroline=0,cmap='RdYlBu_r',contours=0,hemisphere='N',cbfontsize=8,show0=0,shrink=0.8,
               rtitfontsize=10, ltitfontsize=10,
               resolution='c',figsize=(8,8),commonbar=None,projection='polar',fillcont=False,
@@ -321,6 +321,9 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,
               gxoutclabelfmt='%0.f'):
     
+    from matplotlib import rc
+    rc('text', usetex=usetex)
+
     if ts==False:
         # Format set-ups:
         if autoformat:
@@ -407,14 +410,14 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                         cbarcoords=[0.1, 0.055, 0.82, 0.02]
             elif ((nrows!=1 or ncols!=1) and mapid==1):
                     if commonbar=='h':
-                        cbarcoords=[0.15, 0.05, 0.7, 0.02]
+                        cbarcoords=[0.17, 0.05, 0.66, 0.02]
                         bottom=0.1
                     elif commonbar=='v':
                         cbarcoords=[0.85, 0.15, 0.02, 0.7]
             else:
                 bottom=0.35
                 top=0.87
-                cbarcoords=[0.12, 0.27, 0.77, 0.022]
+                cbarcoords=[0.15, 0.27, 0.7, 0.022]
 
         import numpy as np
         from mpl_toolkits.basemap import Basemap, addcyclic
@@ -456,13 +459,14 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         # Set the Colorbar for Eurasian Projections
         if projection=='eurasia1' or projection=='eurasia2':
             commonbar='h'
-            try:
-                bottom
-            except NameError:
-                bottom=0.1
-            try:
-                cbarcoords
-            except NameError:
+#             try:
+#                 bottom
+#             except NameError:
+#                 bottom=0.1
+#             try:
+#                 cbarcoords
+#             except NameError:
+            if nrows==1 and ncols==1 and mapid==1:
                 cbarcoords=[0.09, 0.27, 0.82, 0.02]
         
         # Actuallz draw stuff
