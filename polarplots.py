@@ -580,7 +580,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             mycb.set_label(label=clabel,size=cbfontsize)
             mycb.ax.tick_params(labelsize=cbfontsize)
         elif commonbar=='h':
-            figure.subplots_adjust(bottom=bottom,top=top,left=0.05,right=0.95,hspace=0.1)
+            figure.subplots_adjust(bottom=0.1,top=0.95,left=0.05,right=0.95,hspace=0.1)
             cbar_ax = figure.add_axes(cbarcoords)
             mycb=figure.colorbar(img,ticks=cblevels,cax=cbar_ax, orientation='horizontal',drawedges=False)
             mycb.set_label(label=clabel,size=cbfontsize)
