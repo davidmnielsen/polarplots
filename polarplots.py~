@@ -292,6 +292,19 @@ def getBasemap(projection,lat0,resolution,lon_c,lat,drawMeridians,drawParallels,
             m.drawmeridians(np.arange(-30, 210, 30), labels=[0,1,0,1],linewidth=meridlw)
         if drawParallels==True:
             m.drawparallels(np.arange(20, 90, 20),labels=[1,0,0,0],linewidth=meridlw)
+            
+    # Pacific - South America
+    elif projection=='pas':
+        llcrnrlat=-60
+        urcrnrlat=10
+        llcrnrlon=-180
+        urcrnrlon=-30
+        m = Basemap(llcrnrlon=llcrnrlon,llcrnrlat=llcrnrlat,urcrnrlon=urcrnrlon,urcrnrlat=urcrnrlat,
+                    resolution=resolution,projection='cyl')
+        if drawMeridians==True:
+            m.drawmeridians(np.arange(-180, 0, 30), labels=[0,1,0,1],linewidth=meridlw)
+        if drawParallels==True:
+            m.drawparallels(np.arange(-60, 30, 15),labels=[1,0,0,0],linewidth=meridlw)
     
     # No proper projection given    
     else:
@@ -580,7 +593,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             mycb.set_label(label=clabel,size=cbfontsize)
             mycb.ax.tick_params(labelsize=cbfontsize)
         elif commonbar=='h':
-            figure.subplots_adjust(bottom=0.1,top=0.95,left=0.05,right=0.95,hspace=0.1)
+            figure.subplots_adjust(bottom=0.15,top=0.95,left=0.05,right=0.95,hspace=0.1)
             cbar_ax = figure.add_axes(cbarcoords)
             mycb=figure.colorbar(img,ticks=cblevels,cax=cbar_ax, orientation='horizontal',drawedges=False)
             mycb.set_label(label=clabel,size=cbfontsize)

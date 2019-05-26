@@ -330,7 +330,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               figure=False, autoformat=True, returnxy=False, tight=False,
               ts=False,tsx=False,tsy=False,
               u=False,v=False,skipx=1,skipy=1,scale=1,drawVecLabel=True,nxv=40,nyv=40,
-              vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,vecmag=False,
+              vecunit='m/s',vwidth=4,vlength=4,vaxislength=3,vecmag=False,lon0360=True,
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,
               gxoutclabelfmt='%0.f',
               mklat=False,mklon=False,markersymbol='o',markersize=10,
@@ -502,10 +502,16 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             vc, _ = addcyc(v,lon)
             # longitudes must monotonically increase from -180 to 180
             # latitudes must be in ascending order
-            pos180=int(np.where(lon-180==0)[0])
-            udat, vdat, xvec, yvec = m.transform_vector(np.hstack([uc[::-1,pos180+1:],uc[::-1,:pos180+1]]),
-                                                        np.hstack([vc[::-1,pos180+1:],vc[::-1,:pos180+1]]),
-                                                        lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
+            if lon0360:
+                pos180=int(np.where(lon-180==0)[0])
+                udat, vdat, xvec, yvec = m.transform_vector(np.hstack([uc[::-1,pos180+1:],uc[::-1,:pos180+1]]),
+                                                            np.hstack([vc[::-1,pos180+1:],vc[::-1,:pos180+1]]),
+                                                            lon-180,np.flipud(lat),nxv,nyv,returnxy=True)
+            else:
+                udat, vdat, xvec, yvec = m.transform_vector(uc[::-1,:],
+                                                            vc[::-1,:],
+                                                            lon,np.flipud(lat),nxv,nyv,returnxy=True)
+                
             vectors = m.quiver(xvec[::skipy, ::skipx], yvec[::skipy, ::skipx],
                                udat[::skipy, ::skipx], vdat[::skipy, ::skipx],
                                headwidth=vwidth,headlength=vlength,headaxislength=vaxislength,
