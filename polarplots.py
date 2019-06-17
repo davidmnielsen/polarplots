@@ -366,10 +366,12 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
                 meridFontsize=6
                 cbfontsize=8
                 colorbar=0
+                hspace=0.18
+                wspace=0.18
                 if mapid==1:
                     commonbar='h'
                     bottom=0.1
-                    cbarcoords=[0.15, 0.055, 0.7, 0.02]
+                    cbarcoords=[0.15, 0.06, 0.7, 0.02]
             elif (nrows==3 and ncols==2):            
                 figsize=(7,10)
                 meridFontsize=7
