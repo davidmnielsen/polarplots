@@ -334,7 +334,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
               gxoutc=False, gxoutclevs=False, gxoutccol='k', gxoutclabel=False,gxoutclw=1,
               gxoutclabelfmt='%0.f',
               mklat=False,mklon=False,markersymbol='o',markersize=10,
-              markerfacecolor='lime',markeredgecolor='lime'):
+              markerfacecolor='lime',markeredgecolor='lime',wspace=0.1,hspace=0.1):
     
     from matplotlib import rc
     rc('text', usetex=usetex)
@@ -343,14 +343,15 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
         # Format set-ups:
         if autoformat:
             if (nrows==4 and ncols==3):
-                figsize=(9,12)
+                figsize=(9,11)
                 meridFontsize=5
                 cbfontsize=8
                 colorbar=0
+                hspace=0.18
                 if mapid==1:
                     commonbar='h'
                     bottom=0.1
-                    cbarcoords=[0.15, 0.05, 0.7, 0.02]
+                    cbarcoords=[0.15, 0.1, 0.7, 0.02]
             elif (nrows==2 and ncols==2):
                 figsize=(10,10)
                 meridFontsize=7
@@ -599,7 +600,7 @@ def polaranom(lat=False,lon=False,var=False,vmin=0,vmax=0,inc=0,lat0=False,frame
             mycb.set_label(label=clabel,size=cbfontsize)
             mycb.ax.tick_params(labelsize=cbfontsize)
         elif commonbar=='h':
-            figure.subplots_adjust(bottom=0.15,top=0.95,left=0.05,right=0.95,hspace=0.1)
+            figure.subplots_adjust(bottom=0.15,top=0.95,left=0.05,right=0.95,hspace=hspace,wspace=wspace)
             cbar_ax = figure.add_axes(cbarcoords)
             mycb=figure.colorbar(img,ticks=cblevels,cax=cbar_ax, orientation='horizontal',drawedges=False)
             mycb.set_label(label=clabel,size=cbfontsize)
